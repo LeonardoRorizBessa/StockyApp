@@ -1,20 +1,12 @@
-import { Redirect, Stack, Tabs } from 'expo-router'
+import { Redirect, Tabs } from 'expo-router'
 import { Ionicons } from '@expo/vector-icons'
-
 import { useAuth } from '@/hooks/useAuth'
-import { ActivityIndicator } from 'react-native'
 
 export default function ProtectedLayout(){
-  const { isLoggedIn, isReady } = useAuth()
-
-  if (!isReady) {
-    return (
-      <ActivityIndicator style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }} />
-    )
-  }
+  const { isLoggedIn } = useAuth()
 
   if (!isLoggedIn) {
-    return <Redirect href="/signIn" />
+    return <Redirect href="/welcome" />
   }
 
   return (
@@ -34,11 +26,11 @@ export default function ProtectedLayout(){
         }
       }}>
         <Tabs.Screen
-          name="index"
+          name="home"
           options={{
-            title: 'Estoque',
+            title: 'Home',
             headerShown: false,
-            tabBarIcon: ({ color }) => <Ionicons name="cube-outline" size={24} color={color} />,
+            tabBarIcon: ({ color }) => <Ionicons name="home" size={24} color={color} />,
           }}
         />
         <Tabs.Screen

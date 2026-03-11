@@ -1,5 +1,4 @@
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native'
-
 import { useAuth } from '@/hooks/useAuth'
 
 export default function Index() {
@@ -7,7 +6,7 @@ export default function Index() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Index</Text>
+      <Text style={styles.title}>Home</Text>
       <TouchableOpacity style={styles.button} onPress={signOut}>
         <Text style={styles.buttonText}>Sair</Text>
       </TouchableOpacity>

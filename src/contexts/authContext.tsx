@@ -1,6 +1,6 @@
 import { createContext, PropsWithChildren, useEffect, useState } from 'react'
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import {  router } from 'expo-router'
+import { router } from 'expo-router'
 
 type AuthState = {
   isLoggedIn: boolean
@@ -28,13 +28,13 @@ export function AuthProvider({ children }: PropsWithChildren) {
   function signIn() {
     setIsLoggedIn(true)
     storageState({ isLoggedIn: true })
-    router.replace("/")
+    router.replace("/(protected)/home")
   }
 
   function signOut() {
     setIsLoggedIn(false)
     storageState({ isLoggedIn: false })
-    router.replace("/signIn")
+    router.replace("/welcome")
   }
 
   useEffect(() => {
