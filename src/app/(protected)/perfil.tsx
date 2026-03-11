@@ -1,9 +1,15 @@
-import { View, Text, StyleSheet } from 'react-native'
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native'
+import { useAuth } from '@/hooks/useAuth'
 
 export default function Perfil() {
+  const { signOut } = useAuth()
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Perfil</Text>
+      <TouchableOpacity style={styles.button} onPress={signOut}>
+        <Text style={styles.buttonText}>Sair</Text>
+      </TouchableOpacity>
     </View>
   )
 }
@@ -13,25 +19,26 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#000',
+    backgroundColor: '#1C1C1C',
+    padding: 20,
   },
   title: {
-    color: '#fff',
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 24,
+    color: '#F5F5F5', 
+    fontSize: 28, 
+    fontWeight: 'bold', 
+    marginBottom: 10,
   },
   button: {
     width: "100%",
-    height: 48,
-    backgroundColor: '#fff',
+    height: 50,
+    backgroundColor: '#FF8C00',
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 8,
   },
   buttonText: {
-    color: '#000',
-    fontSize: 16,
-    fontWeight: 'bold',
+    color: '#F5F5F5', 
+    fontSize: 16, 
+    fontWeight: 'bold', 
   },
 })

@@ -35,19 +35,19 @@ export default function CustomSplash() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#000',
+    backgroundColor: '#1C1C1C',
     justifyContent: 'center',
     alignItems: 'center',
   },
   logoBox: {
     padding: 20,
     borderWidth: 2,
-    borderColor: '#fff',
+    borderColor: '#FF8C00',
     borderRadius: 10,
     alignItems: 'center',
   },
   logoText: {
-    color: '#fff',
+    color: '#FF8C00',
     fontSize: 24,
     fontWeight: 'bold',
   }

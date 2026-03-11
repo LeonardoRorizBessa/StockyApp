@@ -12,13 +12,14 @@ export default function ProtectedLayout(){
   return (
     <>
       <Tabs screenOptions={{
-        tabBarActiveTintColor: '#284496',
-        tabBarInactiveTintColor: '#072a63',
+        tabBarActiveTintColor: '#FF8C00',
+        tabBarInactiveTintColor: '#9E9E9E',
         tabBarStyle: {
-          backgroundColor: '#fff',
+          backgroundColor: '#2A2A2A',
           borderTopWidth: 0,
           height: 70,
           paddingBottom: 10,
+          elevation: 10,
         },
         tabBarLabelStyle: {
           fontSize: 12,
@@ -34,11 +35,11 @@ export default function ProtectedLayout(){
           }}
         />
         <Tabs.Screen
-          name="scanner"
+          name="estoque"
           options={{
-            title: 'Escanear',
+            title: 'Estoque',
             headerShown: false,
-            tabBarIcon: ({ color }) => <Ionicons name="barcode-outline" size={24} color={color} />,
+            tabBarIcon: ({ color }) => <Ionicons name="cube-outline" size={24} color={color} />,
           }}
         />
         <Tabs.Screen
