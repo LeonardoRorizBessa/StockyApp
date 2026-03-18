@@ -4,15 +4,15 @@ import { router } from 'expo-router'
 export default function Welcome() {
   return (
     <View style={styles.container}>
-      <View style={styles.logoPlaceholder}>
-        <Text style={styles.logoText}>LOGO</Text>
+      <View style={styles.logoBox}>
+        <Text style={styles.logoText}>STOCKY</Text>
       </View>
 
-      <Text style={styles.title}>Estoque Inteligente</Text>
-      <Text style={styles.subtitle}>Gestão de produtos.</Text>
+      <Text style={styles.title}>Olá, seja bem-vindo!</Text>
+      <Text style={styles.subtitle}>Controle de estoque inteligente.</Text>
       
       <TouchableOpacity style={styles.button} onPress={() => router.push('/signIn')}>
-        <Text style={styles.buttonText}>Entrar</Text>
+        <Text style={styles.buttonText}>Login</Text>
       </TouchableOpacity>
     </View>
   )
@@ -26,19 +26,18 @@ const styles = StyleSheet.create({
     backgroundColor: '#1C1C1C',
     padding: 20,
   },
-  logoPlaceholder: {
-    width: 120,
-    height: 120,
-    backgroundColor: '#FF8C00',
-    justifyContent: 'center',
+  logoBox: {
+    padding: 24,
+    borderWidth: 2,
+    borderColor: '#FF8C00',
+    borderRadius: 10,
     alignItems: 'center',
-    borderRadius: 60,
     marginBottom: 40,
   },
-  logoText: { 
-    color: '#FFFFFF', 
-    fontWeight: 'bold', 
-    fontSize: 18,
+  logoText: {
+    color: '#FF8C00',
+    fontSize: 28,
+    fontWeight: 'bold',
   },
   title: { 
     color: '#F5F5F5', 
@@ -54,7 +53,7 @@ const styles = StyleSheet.create({
   },
   button: {
     width: "100%",
-    height: 50,
+    height: 60,
     backgroundColor: '#FF8C00',
     alignItems: 'center',
     justifyContent: 'center',

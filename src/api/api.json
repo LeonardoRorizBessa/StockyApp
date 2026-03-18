@@ -1,0 +1,109 @@
+{
+  "Usuarios": [
+    {
+      "id": 1,
+      "nome": "Stock",
+      "email": "stock@gmail.com"
+    }
+  ],
+  "Produtos": [
+    {
+      "id": "1",
+      "nome": "Arroz Arbório",
+      "categoria": "Grãos",
+      "marca": "Riso Inverni",
+      "estoque": 4,
+      "codigoBarras": "7891234567890",
+      "icone": "nutrition-outline"
+    },
+    {
+      "id": "2",
+      "nome": "Vinho Branco Seco",
+      "categoria": "Bebidas",
+      "marca": "Casillero del Diablo",
+      "estoque": 0,
+      "codigoBarras": "7890987654321",
+      "icone": "wine-outline"
+    },
+    {
+      "id": "3",
+      "nome": "Atum Sólido",
+      "categoria": "Enlatados",
+      "marca": "Gomes da Costa",
+      "estoque": 10,
+      "codigoBarras": "7891122334455",
+      "icone": "fish-outline"
+    },
+    {
+      "id": "4",
+      "nome": "Arroz Arbório",
+      "categoria": "Grãos",
+      "marca": "Riso Inverni",
+      "estoque": 0,
+      "codigoBarras": "7891234567890",
+      "icone": "nutrition-outline"
+    },
+    {
+      "id": "5",
+      "nome": "Vinho Branco Seco",
+      "categoria": "Bebidas",
+      "marca": "Casillero del Diablo",
+      "estoque": 3,
+      "codigoBarras": "7890987654321",
+      "icone": "wine-outline"
+    },
+    {
+      "id": "6",
+      "nome": "Atum Sólido",
+      "categoria": "Enlatados",
+      "marca": "Gomes da Costa",
+      "estoque": 6,
+      "codigoBarras": "7891122334455",
+      "icone": "fish-outline"
+    }
+  ],
+  "Resumo": [
+    {
+      "id": "1",
+      "icone": "cube-outline",
+      "cor": "#F5F5F5",
+      "quantidade": 360,
+      "label": "Total de itens"
+    },
+    {
+      "id": "2",
+      "icone": "alert-circle-outline",
+      "cor": "#D32F2F",
+      "quantidade": 12,
+      "label": "Sem estoque"
+    },
+    {
+      "id": "3",
+      "icone": "trending-down-outline",
+      "cor": "#FF8C00",
+      "quantidade": 45,
+      "label": "Estoque baixo"
+    },
+    {
+      "id": "4",
+      "icone": "trending-up-outline",
+      "cor": "#388E3C",
+      "quantidade": 15,
+      "label": "Alta demanda"
+    },
+    {
+      "id": "5",
+      "icone": "timer-outline",
+      "cor": "#FBC02D", 
+      "quantidade": 8,
+      "label": "Vencendo em breve"
+    },
+    {
+      "id": "6",
+      "icone": "trash-bin-outline",
+      "cor": "#757575",
+      "quantidade": 2,
+      "label": "Perdas / Avarias"
+    }
+  ]
+}

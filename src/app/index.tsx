@@ -16,7 +16,7 @@ export default function CustomSplash() {
         } else {
           router.replace('/welcome')
         }
-      }, 2000)
+      }, 3000)
     }
 
     return () => clearTimeout(timeout)
@@ -25,8 +25,7 @@ export default function CustomSplash() {
   return (
     <View style={styles.container}>
       <View style={styles.logoBox}>
-        <Text style={styles.logoText}>ESTOQUE</Text>
-        <Text style={styles.logoText}>INTELIGENTE</Text>
+        <Text style={styles.logoText}>STOCKY</Text>
       </View>
     </View>
   );
@@ -40,7 +39,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   logoBox: {
-    padding: 20,
+    padding: 24,
     borderWidth: 2,
     borderColor: '#FF8C00',
     borderRadius: 10,
@@ -48,7 +47,7 @@ const styles = StyleSheet.create({
   },
   logoText: {
     color: '#FF8C00',
-    fontSize: 24,
+    fontSize: 28,
     fontWeight: 'bold',
   }
 })
