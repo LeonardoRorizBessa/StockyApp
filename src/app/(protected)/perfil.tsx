@@ -20,8 +20,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#1C1C1C',
-    paddingHorizontal: 16,
-    paddingVertical: 32,
+    paddingHorizontal: 12,
+    paddingTop: 36,
   },
   title: {
     color: '#F5F5F5', 

@@ -13,9 +13,9 @@ export default function Cadastrar() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#121212',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: '#1C1C1C',
+    paddingHorizontal: 12,
+    paddingTop: 36,
   },
   title: {
     fontSize: 18,

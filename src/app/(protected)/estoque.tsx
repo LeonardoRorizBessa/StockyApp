@@ -6,7 +6,7 @@ import CardItens from '@/components/CardItens'
 
 export default function Estoque() {
   const [isFocused, setIsFocused] = useState(false)
-  const listaDeProdutos = DB.Produtos
+  const dadosProdutos = DB.Produtos
 
   return (
     <>
@@ -28,7 +28,7 @@ export default function Estoque() {
           Estoque
         </Text>
         <FlatList
-          data={listaDeProdutos}
+          data={dadosProdutos}
           keyExtractor={(item) => item.id}
           showsVerticalScrollIndicator={false}
           contentContainerStyle={styles.itensContainer}
@@ -52,8 +52,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#1C1C1C',
-    paddingHorizontal: 16,
-    paddingTop: 48,
+    paddingHorizontal: 12,
+    paddingTop: 36,
   },
   searchContainer: {
     flexDirection: 'row',
@@ -78,10 +78,10 @@ const styles = StyleSheet.create({
   },
   title: {
     color: '#F5F5F5', 
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: 'bold',
     marginTop: 24,
-    marginBottom: 12,
+    marginBottom: 8,
   },
   itensContainer: {
     gap: 8,
