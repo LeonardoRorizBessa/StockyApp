@@ -23,12 +23,10 @@ export default function Estoque() {
           />
         </View>
         
-        {/* TITULO */}
+        {/* SECTION ESTOQUE */}
         <Text style={styles.title}>
           Estoque
         </Text>
-
-        {/* LISTA DE ITENS */}
         <FlatList
           data={listaDeProdutos}
           keyExtractor={(item) => item.id}
@@ -55,7 +53,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#1C1C1C',
     paddingHorizontal: 16,
-    paddingTop: 40,
+    paddingTop: 48,
   },
   searchContainer: {
     flexDirection: 'row',
@@ -64,7 +62,6 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     height: 50,
     paddingHorizontal: 16,
-    marginVertical: 16,
     width: '100%',
     borderWidth: 1,
     borderColor: 'transparent',
@@ -80,13 +77,14 @@ const styles = StyleSheet.create({
     marginLeft: 10,
   },
   title: {
-    color: '#F5F5F5',
+    color: '#F5F5F5', 
     fontSize: 20,
     fontWeight: 'bold',
-    marginBottom: 16,
+    marginTop: 24,
+    marginBottom: 12,
   },
   itensContainer: {
     gap: 8,
-    paddingBottom: 16,
+    paddingBottom: 8,
   },
 })

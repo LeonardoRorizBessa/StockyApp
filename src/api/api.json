@@ -105,5 +105,35 @@
       "quantidade": 2,
       "label": "Perdas / Avarias"
     }
+  ],
+  "movimentacoes": [
+    {
+      "id": "1",
+      "tipo": "entrada",
+      "produto": "Arroz Arbório",
+      "quantidade": 10,
+      "data": "Hoje, 14:30"
+    },
+    {
+      "id": "2",
+      "tipo": "saida",
+      "produto": "Vinho Branco Seco",
+      "quantidade": 2,
+      "data": "Hoje, 11:15"
+    },
+    {
+      "id": "3",
+      "tipo": "entrada",
+      "produto": "Macarrão Penne",
+      "quantidade": 24,
+      "data": "Ontem, 18:45"
+    },
+    {
+      "id": "4",
+      "tipo": "saida",
+      "produto": "Atum Sólido",
+      "quantidade": 1,
+      "data": "Ontem, 09:20"
+    }
   ]
 }

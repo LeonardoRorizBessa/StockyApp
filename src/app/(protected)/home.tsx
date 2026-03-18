@@ -1,28 +1,37 @@
-import { View, StyleSheet, FlatList, Text } from 'react-native'
+import { View, StyleSheet, FlatList, Text, ScrollView } from 'react-native'
 import DB from '@/api/api.json'
 import Perfil from '@/components/Perfil'
 import CardInfos from '@/components/CardInfos'
 import CardAcao from '@/components/CardAcao'
+import CardMovimentacao from '@/components/CardMovimentacao'
 
 export default function Index() {
   const dadosResumo = DB.Resumo
+  const dadosMovimentacoes = DB.movimentacoes
 
   return (
     <>
-      <View style={styles.container}>
+      <ScrollView 
+        style={styles.container}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ paddingBottom: 40 }}
+      >
         {/* VIEW HEADER */}
         <View style={styles.headerContainer}>
           <Perfil />
+          {/* <Text style={styles.title}>
+            Leonardo Bessa
+          </Text> */}
         </View>
 
         {/* SECTION RESUMO */}
-        <Text style={styles.title}>
+        {/* <Text style={styles.title}>
           Olá, Leonardo!
-        </Text>
+        </Text> */}
         <FlatList
           horizontal={true} 
           showsHorizontalScrollIndicator={false}
-          style={styles.scrollViewer}
+          style={styles.flatList}
           contentContainerStyle={styles.infosContainer}
           data={dadosResumo}
           keyExtractor={(item) => item.id}
@@ -75,7 +84,21 @@ export default function Index() {
         <Text style={styles.title}>
           Movimentações recentes
         </Text>
-      </View>
+        <FlatList
+          data={dadosMovimentacoes}
+          keyExtractor={(item) => item.id}
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.movimentacoesContainer}
+          renderItem={({ item }) => (
+            <CardMovimentacao 
+              tipo={item.tipo as any}
+              produto={item.produto}
+              quantidade={item.quantidade}
+              data={item.data}
+            />
+          )}
+        />
+      </ScrollView>
     </>
   )
 }
@@ -85,23 +108,23 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#1C1C1C',
     paddingHorizontal: 16,
-    paddingTop: 40,
+    paddingTop: 48,
   },
   headerContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     width: '100%',
-    marginVertical: 16,
   },
   title: {
     color: '#F5F5F5', 
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: 'bold',
     marginTop: 24,
-    marginBottom: 12,
+    marginBottom: 8,
   },
-  scrollViewer: {
+  flatList: {
     flexGrow: 0,
+    marginTop: 16,
   },
   infosContainer: {
     gap: 8,
@@ -114,5 +137,9 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     width: '100%',
     gap: 8,
+  },
+  movimentacoesContainer: {
+    gap: 8,
+    paddingBottom: 8,
   },
 })
