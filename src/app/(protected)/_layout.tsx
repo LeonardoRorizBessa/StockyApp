@@ -50,6 +50,34 @@ export default function ProtectedLayout(){
             tabBarIcon: ({ color }) => <Ionicons name="person-outline" size={24} color={color} />,
           }}
         />
+        <Tabs.Screen 
+          name="acoes/cadastrar" 
+          options={{ 
+            headerShown: false,
+            href: null
+          }}
+        />
+        <Tabs.Screen 
+          name="acoes/entrada" 
+          options={{ 
+            headerShown: false,
+            href: null
+          }}
+        />
+        <Tabs.Screen 
+          name="acoes/saida" 
+          options={{ 
+            headerShown: false,
+            href: null
+          }}
+        />
+        <Tabs.Screen 
+          name="acoes/scanner" 
+          options={{ 
+            headerShown: false,
+            href: null
+          }}
+        />
       </Tabs>
     </>
   )

@@ -1,8 +1,8 @@
 import { View, StyleSheet, FlatList, Text } from 'react-native'
 import DB from '@/api/api.json'
 import Perfil from '@/components/Perfil'
-import Adicionar from '@/components/Adicionar'
 import CardInfos from '@/components/CardInfos'
+import CardAcao from '@/components/CardAcao'
 
 export default function Index() {
   const dadosResumo = DB.Resumo
@@ -13,15 +13,12 @@ export default function Index() {
         {/* VIEW HEADER */}
         <View style={styles.headerContainer}>
           <Perfil />
-          <Adicionar />
         </View>
 
-        {/* BEM-VINDO */}
+        {/* SECTION RESUMO */}
         <Text style={styles.title}>
           Olá, Leonardo!
         </Text>
-
-        {/* LISTA DE INFORMAÇÕES */}
         <FlatList
           horizontal={true} 
           showsHorizontalScrollIndicator={false}
@@ -38,6 +35,46 @@ export default function Index() {
             />
           )}
         />
+
+        {/* SECTION AÇÕES RÁPIDAS */}
+        <Text style={styles.title}>
+          Ações Rápidas
+        </Text>
+        <View style={styles.acaoContainer}>
+          <View style={styles.acaoBox}>
+            <CardAcao 
+              titulo={"Novo\nProduto"} 
+              icone="add-circle-outline" 
+              cor="#FF8C00" 
+              rota="/acoes/cadastrar" 
+            />
+            <CardAcao 
+              titulo={"Entrada\nEstoque"} 
+              icone="arrow-down-outline" 
+              cor="#388E3C" 
+              rota="/acoes/entrada" 
+            />
+          </View>
+          <View style={styles.acaoBox}>
+            <CardAcao 
+              titulo={"Escanear\nCódigo"} 
+              icone="barcode-outline" 
+              cor="#42A5F5" 
+              rota="/acoes/scanner" 
+            />
+            <CardAcao 
+              titulo={"Saída\nEstoque"} 
+              icone="arrow-up-outline" 
+              cor="#D32F2F" 
+              rota="/acoes/saida" 
+            />
+          </View>
+        </View>
+
+        {/* SECTION MOVIMENTAÇÕES RECENTES */}
+        <Text style={styles.title}>
+          Movimentações recentes
+        </Text>
       </View>
     </>
   )
@@ -52,7 +89,6 @@ const styles = StyleSheet.create({
   },
   headerContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
     width: '100%',
     marginVertical: 16,
@@ -61,12 +97,22 @@ const styles = StyleSheet.create({
     color: '#F5F5F5', 
     fontSize: 20,
     fontWeight: 'bold',
-    marginBottom: 16,
+    marginTop: 24,
+    marginBottom: 12,
   },
   scrollViewer: {
     flexGrow: 0,
   },
   infosContainer: {
+    gap: 8,
+  },
+  acaoContainer: {
+    gap: 8,
+  },
+  acaoBox: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
     gap: 8,
   },
 })
