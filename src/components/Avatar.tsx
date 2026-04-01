@@ -2,7 +2,7 @@ import { View, StyleSheet } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { COLORS, SPACING, FONTS, RADIUS } from '@/theme'
 
-export default function Perfil() {
+export default function Avatar() {
   return ( 
     <>
       <View style={styles.container}>

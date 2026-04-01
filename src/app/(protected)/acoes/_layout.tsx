@@ -8,5 +8,5 @@ export default function AcoesLayout() {
       <Stack.Screen name="saida" />
       <Stack.Screen name="scanner" />
     </Stack>
-  );
+  )
 }
