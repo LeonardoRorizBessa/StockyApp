@@ -1,10 +1,33 @@
-import { View, StyleSheet, Text } from 'react-native'
+import { useState } from 'react'
+import { 
+  View, 
+  StyleSheet, 
+  Text, 
+  TextInput, 
+  TouchableOpacity, 
+  ScrollView, 
+  KeyboardAvoidingView, 
+  Platform 
+} from 'react-native'
+import { Ionicons } from '@expo/vector-icons'
+import { router } from 'expo-router'
+import { COLORS, SPACING, FONTS, RADIUS } from '@/theme'
 
 export default function Entrada() {
   return (
     <>
       <View style={styles.container}>
-        <Text style={styles.title}>Entrada de Ação</Text>
+        {/* VIEW HEADER */}
+        <View style={styles.headerContainer}>
+          <TouchableOpacity 
+            onPress={() => router.replace('/home')} 
+            style={styles.backButton}
+          >
+            <Ionicons name="chevron-back" size={28} color={COLORS.brancoTexto} />
+          </TouchableOpacity>
+        </View>
+
+        
       </View>
     </>
   )
@@ -13,14 +36,22 @@ export default function Entrada() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#1C1C1C',
-    paddingHorizontal: 12,
-    paddingTop: 36,
+    backgroundColor: COLORS.cinzaEscuro,
+    paddingHorizontal: SPACING.sm,
+    paddingTop: SPACING.xxl,
   },
-  title: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#FFFFFF',
-    marginBottom: 16,
+  headerContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    width: '100%',
+    marginBottom: SPACING.xs,
+  },
+  backButton: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: 44,
+    height: 44,
+    borderRadius: RADIUS.xl,
+    backgroundColor: COLORS.cinzaMedio,
   },
 })
