@@ -1,33 +1,40 @@
 import { View, Text, StyleSheet } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
+import { COLORS, SPACING, FONTS, RADIUS } from '@/theme'
 
-interface CardMovimentacaoProps {
+interface Props {
   tipo: 'entrada' | 'saida';
   produto: string;
   quantidade: number;
   data: string;
 }
 
-export default function CardMovimentacao({ tipo, produto, quantidade, data }: CardMovimentacaoProps) {
+export default function CardMovimentacao({ tipo, produto, quantidade, data }: Props) {
   const isEntrada = tipo === 'entrada'
-  const corIcone = isEntrada ? '#388E3C' : '#D32F2F'
+  const cor = isEntrada ? '#388E3C' : '#D32F2F'
   const nomeIcone = isEntrada ? 'arrow-down' : 'arrow-up'
   const sinalQuantidade = isEntrada ? '+' : '-'
 
   return (
     <View style={styles.card}>
-      <View style={[styles.iconBox, { backgroundColor: `${corIcone}20` }]}>
-        <Ionicons name={nomeIcone} size={20} color={corIcone} />
+      {/* VIEW ICON */}
+      <View style={[styles.cardIcon, { backgroundColor: `${cor}20` }]}>
+        <Ionicons name={nomeIcone} size={24} color={cor} />
       </View>
-
+      {/* VIEW INFO */}
       <View style={styles.infoContainer}>
-        <Text style={styles.produtoNome} numberOfLines={1}>{produto}</Text>
-        <Text style={styles.dataTexto}>{data}</Text>
+        <Text style={styles.productName} numberOfLines={1}>
+          {produto}
+        </Text>
+        <Text style={styles.productDate}>
+          {data}
+        </Text>
       </View>
-
-      <View style={styles.quantidadeContainer}>
-        <Text style={[styles.quantidadeTexto, { color: corIcone }]}>
-          {sinalQuantidade}{quantidade}
+      {/* VIEW QUANTIDADE */}
+      <View style={styles.numberContainer}>
+        <Text style={[styles.numberText, { color: cor }]}>
+          {sinalQuantidade}
+          {quantidade}
         </Text>
       </View>
     </View>
@@ -38,36 +45,35 @@ const styles = StyleSheet.create({
   card: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 4,
+    paddingVertical: SPACING.xxs,
   },
-  iconBox: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+  cardIcon: {
     justifyContent: 'center',
     alignItems: 'center',
+    width: 40,
+    height: 40,
+    borderRadius: RADIUS.xl,
   },
   infoContainer: {
     flex: 1,
-    marginLeft: 12,
     justifyContent: 'center',
-    gap: 4,
+    marginLeft: SPACING.sm,
+    gap: SPACING.xxs,
   },
-  produtoNome: {
-    color: '#F5F5F5',
-    fontSize: 14,
-    fontWeight: 'bold',
+  productName: {
+    color: COLORS.brancoTexto,
+    fontSize: FONTS.size.md,
   },
-  dataTexto: {
-    color: '#9E9E9E',
-    fontSize: 10,
+  productDate: {
+    color: COLORS.cinzaTexto,
+    fontSize: FONTS.size.xs,
   },
-  quantidadeContainer: {
+  numberContainer: {
     justifyContent: 'center',
     alignItems: 'flex-end',
   },
-  quantidadeTexto: {
-    fontSize: 16,
-    fontWeight: 'bold',
+  numberText: {
+    fontSize: FONTS.size.lg,
+    fontWeight: FONTS.weight.bold,
   },
 })

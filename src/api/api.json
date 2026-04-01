@@ -68,42 +68,35 @@
       "icone": "cube-outline",
       "cor": "#F5F5F5",
       "quantidade": 360,
-      "label": "Total de itens"
+      "text": "Total de itens"
     },
     {
       "id": "2",
-      "icone": "alert-circle-outline",
-      "cor": "#D32F2F",
-      "quantidade": 12,
-      "label": "Sem estoque"
+      "icone": "trending-up-outline",
+      "cor": "#388E3C",
+      "quantidade": 15,
+      "text": "Alta demanda"
     },
     {
       "id": "3",
       "icone": "trending-down-outline",
       "cor": "#FF8C00",
       "quantidade": 45,
-      "label": "Estoque baixo"
+      "text": "Estoque baixo"
     },
     {
       "id": "4",
-      "icone": "trending-up-outline",
-      "cor": "#388E3C",
-      "quantidade": 15,
-      "label": "Alta demanda"
+      "icone": "alert-circle-outline",
+      "cor": "#D32F2F",
+      "quantidade": 12,
+      "text": "Sem estoque"
     },
     {
       "id": "5",
-      "icone": "timer-outline",
-      "cor": "#FBC02D", 
-      "quantidade": 8,
-      "label": "Vencendo em breve"
-    },
-    {
-      "id": "6",
       "icone": "trash-bin-outline",
       "cor": "#757575",
       "quantidade": 2,
-      "label": "Perdas / Avarias"
+      "text": "Perdas / Avarias"
     }
   ],
   "movimentacoes": [
@@ -130,6 +123,13 @@
     },
     {
       "id": "4",
+      "tipo": "saida",
+      "produto": "Atum Sólido",
+      "quantidade": 1,
+      "data": "Ontem, 09:20"
+    },
+    {
+      "id": "5",
       "tipo": "saida",
       "produto": "Atum Sólido",
       "quantidade": 1,

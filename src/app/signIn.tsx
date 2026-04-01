@@ -6,12 +6,12 @@ import {
   TextInput, 
   TouchableOpacity, 
   KeyboardAvoidingView, 
-  Platform, 
   ScrollView 
 } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { router } from 'expo-router'
 import { useAuth } from '@/hooks/useAuth'
+import { COLORS, SPACING, FONTS, RADIUS } from '@/theme'
 
 export default function SignIn() {
   const { signIn } = useAuth()
@@ -32,7 +32,7 @@ export default function SignIn() {
             style={styles.backButton} 
             onPress={() => router.back()}
           >
-            <Ionicons name="arrow-back" size={28} color="#F5F5F5" />
+            <Ionicons name="arrow-back" size={28} color={COLORS.brancoTexto} />
           </TouchableOpacity>
 
           <View style={styles.header}>
@@ -47,7 +47,7 @@ export default function SignIn() {
               <TextInput
                 style={styles.input}
                 placeholder="Insira seu e-mail"
-                placeholderTextColor="#9E9E9E"
+                placeholderTextColor={COLORS.cinzaTexto}
                 value={email}
                 onChangeText={setEmail}
                 keyboardType="email-address"
@@ -61,7 +61,7 @@ export default function SignIn() {
                 <TextInput
                   style={[styles.input, { flex: 1, borderWidth: 0 }]}
                   placeholder="Insira sua senha"
-                  placeholderTextColor="#9E9E9E"
+                  placeholderTextColor={COLORS.cinzaTexto}
                   value={password}
                   onChangeText={setPassword}
                   secureTextEntry={secureText}
@@ -73,7 +73,7 @@ export default function SignIn() {
                   <Ionicons 
                     name={secureText ? "eye-off-outline" : "eye-outline"} 
                     size={22} 
-                    color="#9E9E9E" 
+                    color={COLORS.cinzaTexto} 
                   />
                 </TouchableOpacity>
               </View>
@@ -94,81 +94,81 @@ export default function SignIn() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#1c1c1c', 
-    paddingHorizontal: 12,
-    paddingTop: 36,
+    backgroundColor: COLORS.cinzaEscuro,
+    paddingHorizontal: SPACING.sm,
+    paddingTop: SPACING.xxl,
   },
   content: {
     flex: 1, 
   },
   backButton: {
+    justifyContent: 'center',
     width: 40,
     height: 40,
-    justifyContent: 'center',
-    marginBottom: 20,
+    marginBottom: SPACING.md,
   },
   header: {
-    marginBottom: 60,
+    marginBottom: SPACING.xxl,
   },
   title: {
-    color: '#F5F5F5', 
-    fontSize: 28,
-    fontWeight: 'bold',
+    color: COLORS.brancoTexto,
+    fontSize: FONTS.size.xxl,
+    fontWeight: FONTS.weight.bold,
   },
   subtitle: {
-    color: '#9E9E9E', 
-    fontSize: 16,
-    marginTop: 10,
+    color: COLORS.cinzaTexto,
+    fontSize: FONTS.size.lg,
+    marginTop: SPACING.sm,
   },
   form: {
-    gap: 24, 
+    gap: SPACING.lg, 
   },
   inputGroup: {
-    gap: 8, 
+    gap: SPACING.xs, 
   },
   label: {
-    color: '#9E9E9E',
-    fontSize: 14,
-    fontWeight: 'bold',
+    color: COLORS.cinzaTexto,
+    fontSize: FONTS.size.md,
+    fontWeight: FONTS.weight.bold,
   },
   input: {
-    backgroundColor: '#2A2A2A', 
-    color: '#F5F5F5', 
-    fontSize: 16,
     height: 60,
-    borderRadius: 8,
-    paddingHorizontal: 16,
+    backgroundColor: COLORS.cinzaMedio, 
+    color: COLORS.brancoTexto, 
+    fontSize: FONTS.size.lg,
+    paddingHorizontal: SPACING.md,
+    borderColor: COLORS.cinzaClaro, 
+    borderRadius: RADIUS.sm,
     borderWidth: 1,
-    borderColor: '#333', 
   },
   passwordInputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#2A2A2A',
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: '#333333',
     height: 60,
+    backgroundColor: COLORS.cinzaMedio,
+    borderColor: COLORS.cinzaClaro,
+    borderRadius: RADIUS.sm,
+    borderWidth: 1,
   },
   eyeIconContainer: {
-    paddingHorizontal: 16,
     justifyContent: 'center',
+        paddingHorizontal: SPACING.md,
   },
   footer: {
     justifyContent: 'flex-end',
-    marginBottom: 40, 
+    marginBottom: SPACING.xxl, 
   },
   loginButton: {
-    width: "100%",
-    height: 60,
-    backgroundColor: '#FF8C00',
-    borderRadius: 8,
     alignItems: 'center',
     justifyContent: 'center',
+    width: "100%",
+    height: 60,
+    backgroundColor: COLORS.laranjaStock,
+    borderRadius: RADIUS.sm,
   },
   loginButtonText: {
-    color: '#F5F5F5', 
-    fontSize: 16,
-    fontWeight: 'bold',
+    color: COLORS.brancoTexto,
+    fontSize: FONTS.size.lg,
+    fontWeight: FONTS.weight.bold,
   },
 })

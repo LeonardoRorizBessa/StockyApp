@@ -1,53 +1,55 @@
 import { TouchableOpacity, View, Text, StyleSheet } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { router, Href } from 'expo-router'
+import { COLORS, SPACING, FONTS, RADIUS } from '@/theme'
 
-interface CardAcaoProps {
+interface Props {
   titulo: string;
   icone: keyof typeof Ionicons.glyphMap;
   cor: string;
   rota: Href;
 }
 
-export default function CardAcao({ titulo, icone, cor, rota }: CardAcaoProps) {
+export default function CardAcao({ titulo, icone, cor, rota }: Props) {
   return (
     <>
       <TouchableOpacity
-        style={styles.actionButton}
+        style={styles.card}
         activeOpacity={0.8}
         onPress={() => router.push(rota)} 
       >
-        <View style={[styles.actionIconBg, { backgroundColor: `${cor}20` }]}>
+        <View style={[styles.cardIcon, { backgroundColor: `${cor}20` }]}>
           <Ionicons name={icone} size={32} color={cor} />
         </View>
-        
-        <Text style={styles.actionText}>{titulo}</Text>
+        <Text style={styles.cardText}>
+          {titulo}
+        </Text>
       </TouchableOpacity>
     </>
   )
 }
 
 const styles = StyleSheet.create({
-  actionButton: {
+  card: {
     flex: 1,
-    backgroundColor: '#2A2A2A',
-    borderRadius: 16,
-    padding: 16,
     alignItems: 'center',
     justifyContent: 'center',
+    backgroundColor: COLORS.cinzaMedio,
+    borderRadius: RADIUS.lg,
+    padding: SPACING.md,
   },
-  actionIconBg: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
+  cardIcon: {
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 16,
+    width: 56,
+    height: 56,
+    borderRadius: RADIUS.xl,
+    marginBottom: SPACING.md,
   },
-  actionText: {
-    color: '#F5F5F5',
-    fontSize: 14,
-    fontWeight: 'bold',
+  cardText: {
     textAlign: 'center',
+    color: COLORS.brancoTexto,
+    fontSize: FONTS.size.md,
+    fontWeight: FONTS.weight.semiBold,
   },
 })

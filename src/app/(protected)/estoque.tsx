@@ -1,49 +1,114 @@
-import { useState } from 'react'
-import { View, Text, StyleSheet, TextInput, FlatList } from 'react-native'
+import { useState, useEffect } from 'react'
+import { View, Text, StyleSheet, TextInput, FlatList, ActivityIndicator } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
-import DB from '@/api/api.json'
-import CardItens from '@/components/CardItens'
+import { supabase } from '@/lib/supabase'
+import { COLORS, SPACING, FONTS, RADIUS } from '@/theme'
+import CardProdutos from '@/components/CardProdutos'
+import ModalProdutos from '@/components/ModalProdutos'
 
 export default function Estoque() {
   const [isFocused, setIsFocused] = useState(false)
-  const dadosProdutos = DB.Produtos
+  const [dadosProdutos, setDadosProdutos] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
+
+  const [modalVisivel, setModalVisivel] = useState(false)
+  const [produtoSelecionado, setProdutoSelecionado] = useState<any>(null)
+
+  useEffect(() => {
+    buscarProdutos()
+  }, [])
+
+  const buscarProdutos = async () => {
+    try {
+      setLoading(true)
+      
+      const { data, error } = await supabase
+        .from('produtos')
+        .select(`
+          id,
+          nome,
+          medida,
+          codigo_barras,
+          estoque_atual,
+          marcas (nome),
+          categorias (nome)
+        `)
+
+      if (error) {
+        console.error("Erro do Supabase:", error)
+        return
+      }
+
+      if (data) {
+        setDadosProdutos(data)
+      }
+    } catch (error) {
+      console.error("Erro ao buscar dados:", error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const abrirModal = (item: any) => {
+    setProdutoSelecionado({
+      nome: item.nome,
+      medida: item.medida,
+      marca: item.marcas?.nome || 'Sem marca',
+      categoria: item.categorias?.nome || 'Sem categoria',
+      codigoBarras: item.codigo_barras,
+      estoque: item.estoque_atual
+    })
+    setModalVisivel(true)
+  }
 
   return (
     <>
       <View style={styles.container}>
         {/* BARRA DE PESQUISA */}
         <View style={[ styles.searchContainer, isFocused && styles.searchContainerFocused ]}>
-          <Ionicons name="search-outline" size={24} color={isFocused ? "#FF8C00" : "#9E9E9E"} />
+          <Ionicons name="search-outline" size={24} color={isFocused ? COLORS.laranjaStock : COLORS.cinzaTexto} />
           <TextInput
             style={styles.searchInput}
             placeholder="Pesquisar..."
-            placeholderTextColor="#9E9E9E"
+            placeholderTextColor={COLORS.cinzaTexto}
             onFocus={() => setIsFocused(true)}
             onBlur={() => setIsFocused(false)}
           />
         </View>
         
         {/* SECTION ESTOQUE */}
-        <Text style={styles.title}>
-          Estoque
-        </Text>
-        <FlatList
-          data={dadosProdutos}
-          keyExtractor={(item) => item.id}
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={styles.itensContainer}
-          renderItem={({ item }) => (
-            <CardItens 
-              nome={item.nome}
-              categoria={item.categoria}
-              marca={item.marca}
-              estoque={item.estoque}
-              codigoBarras={item.codigoBarras}
-              iconePadrao={item.icone as any}
-            />
-          )}
-        />
+        {loading 
+          ? 
+            (
+              <ActivityIndicator size="large" color={COLORS.laranjaStock} style={{ marginTop: 40 }} />
+            ) 
+          : 
+            (
+              <FlatList
+                data={dadosProdutos}
+                keyExtractor={(item) => item.id.toString()}
+                showsVerticalScrollIndicator={false}
+                contentContainerStyle={styles.itensContainer}
+                renderItem={({ item }) => (
+                  <CardProdutos 
+                    nome={item.nome}
+                    medida={item.medida}
+                    marca={item.marcas?.nome}
+                    estoque={item.estoque_atual}
+                    iconePadrao="cube-outline" 
+                    onPress={() => abrirModal(item)}
+                  />
+                )}
+              />
+            )
+        }
       </View>
+
+      <ModalProdutos 
+        visible={modalVisivel} 
+        onClose={() => setModalVisivel(false)}
+        produto={produtoSelecionado}
+      />
     </>
   )
 }
@@ -51,40 +116,34 @@ export default function Estoque() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#1C1C1C',
-    paddingHorizontal: 12,
-    paddingTop: 36,
+    backgroundColor: COLORS.cinzaEscuro,
+    paddingHorizontal: SPACING.sm,
+    paddingTop: SPACING.xxl,
   },
   searchContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#2A2A2A',
-    borderRadius: 30,
-    height: 50,
-    paddingHorizontal: 16,
     width: '100%',
+    height: 50,
+    backgroundColor: COLORS.cinzaMedio,
+    paddingHorizontal: SPACING.md,
+    borderRadius: RADIUS.xl,
     borderWidth: 1,
     borderColor: 'transparent',
   },
   searchContainerFocused: {
-    borderColor: '#FF8C00',
-    backgroundColor: '#333333',
+    borderColor: COLORS.laranjaStock,
+    backgroundColor: COLORS.cinzaClaro,
   },
   searchInput: {
     flex: 1,
-    color: '#F5F5F5',
-    fontSize: 16,
-    marginLeft: 10,
-  },
-  title: {
-    color: '#F5F5F5', 
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginTop: 24,
-    marginBottom: 8,
+    color: COLORS.brancoTexto,
+    fontSize: FONTS.size.lg,
+    marginLeft: SPACING.xxs,
   },
   itensContainer: {
-    gap: 8,
-    paddingBottom: 8,
+    marginTop: SPACING.xs,
+    gap: SPACING.xs,
+    paddingVertical: SPACING.xs,
   },
 })

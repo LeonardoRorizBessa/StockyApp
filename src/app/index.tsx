@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { View, Text, StyleSheet } from 'react-native'
 import { router } from 'expo-router'
 import { useAuth } from '@/hooks/useAuth'
+import { COLORS, SPACING, FONTS, RADIUS } from '@/theme'
 
 export default function CustomSplash() {
   const { isReady, isLoggedIn } = useAuth()
@@ -34,20 +35,20 @@ export default function CustomSplash() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#1C1C1C',
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: COLORS.cinzaEscuro,
   },
   logoBox: {
-    padding: 24,
-    borderWidth: 2,
-    borderColor: '#FF8C00',
-    borderRadius: 10,
     alignItems: 'center',
+    padding: SPACING.lg,
+    borderColor: COLORS.laranjaStock,
+    borderRadius: RADIUS.md,
+    borderWidth: 2,
   },
   logoText: {
-    color: '#FF8C00',
-    fontSize: 28,
-    fontWeight: 'bold',
+    color: COLORS.laranjaStock,
+    fontSize: FONTS.size.xxl,
+    fontWeight: FONTS.weight.bold,
   }
 })

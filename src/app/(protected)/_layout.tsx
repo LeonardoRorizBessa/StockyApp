@@ -51,31 +51,11 @@ export default function ProtectedLayout(){
           }}
         />
         <Tabs.Screen 
-          name="acoes/cadastrar" 
+          name="acoes" 
           options={{ 
             headerShown: false,
-            href: null
-          }}
-        />
-        <Tabs.Screen 
-          name="acoes/entrada" 
-          options={{ 
-            headerShown: false,
-            href: null
-          }}
-        />
-        <Tabs.Screen 
-          name="acoes/saida" 
-          options={{ 
-            headerShown: false,
-            href: null
-          }}
-        />
-        <Tabs.Screen 
-          name="acoes/scanner" 
-          options={{ 
-            headerShown: false,
-            href: null
+            href: null,
+            tabBarStyle: { display: 'none' } 
           }}
         />
       </Tabs>

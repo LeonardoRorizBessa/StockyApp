@@ -1,5 +1,6 @@
 import { View, StyleSheet } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
+import { COLORS, SPACING, FONTS, RADIUS } from '@/theme'
 
 export default function Perfil() {
   return ( 
@@ -15,9 +16,9 @@ const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
     justifyContent: 'center',
-    width: 50,
-    height: 50,
-    backgroundColor: '#FF8C00',
-    borderRadius: '100%',
+    width: 48,
+    height: 48,
+    backgroundColor: COLORS.laranjaStock,
+    borderRadius: RADIUS.xl,
   },
 })

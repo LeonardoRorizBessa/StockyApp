@@ -4,6 +4,7 @@ import Perfil from '@/components/Perfil'
 import CardInfos from '@/components/CardInfos'
 import CardAcao from '@/components/CardAcao'
 import CardMovimentacao from '@/components/CardMovimentacao'
+import { COLORS, SPACING, FONTS, RADIUS } from '@/theme'
 
 export default function Index() {
   const dadosResumo = DB.Resumo
@@ -31,7 +32,7 @@ export default function Index() {
                 icone={item.icone as any}
                 cor={item.cor}
                 quantidade={item.quantidade}
-                label={item.label}
+                text={item.text}
               />
             )}
           />
@@ -43,15 +44,15 @@ export default function Index() {
           <View style={styles.acaoContainer}>
             <View style={styles.acaoBox}>
               <CardAcao 
-                titulo={"Novo\nProduto"} 
+                titulo={"Cadastrar\nProduto"} 
                 icone="add-circle-outline" 
-                cor="#FF8C00" 
+                cor={COLORS.laranjaStock} 
                 rota="/acoes/cadastrar" 
               />
               <CardAcao 
                 titulo={"Entrada\nEstoque"} 
                 icone="arrow-down-outline" 
-                cor="#388E3C" 
+                cor={COLORS.verdeSucesso} 
                 rota="/acoes/entrada" 
               />
             </View>
@@ -59,13 +60,13 @@ export default function Index() {
               <CardAcao 
                 titulo={"Escanear\nCódigo"} 
                 icone="barcode-outline" 
-                cor="#42A5F5" 
+                cor={COLORS.azulInfo}
                 rota="/acoes/scanner" 
               />
               <CardAcao 
                 titulo={"Saída\nEstoque"} 
                 icone="arrow-up-outline" 
-                cor="#D32F2F" 
+                cor={COLORS.vermelhoPerigo}
                 rota="/acoes/saida" 
               />
             </View>
@@ -95,41 +96,42 @@ export default function Index() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#1C1C1C',
-    paddingHorizontal: 12,
-    paddingTop: 36,
+    backgroundColor: COLORS.cinzaEscuro,
+    paddingHorizontal: SPACING.sm,
+    paddingTop: SPACING.xxl,
   },
   headerContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     width: '100%',
-    marginBottom: 12,
+    marginBottom: SPACING.xs,
   },
   title: {
-    color: '#F5F5F5', 
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginTop: 24,
-    marginBottom: 8,
+    color: COLORS.brancoTexto, 
+    fontSize: FONTS.size.lg,
+    fontWeight: FONTS.weight.bold,
+    marginTop: SPACING.lg,
+    marginBottom: SPACING.xs,
+    marginLeft: SPACING.xs,
   },
   flatList: {
     flexGrow: 0,
-    marginTop: 16,
+    marginTop: SPACING.xs,
   },
   infosContainer: {
-    gap: 8,
+    gap: SPACING.xs,
   },
   acaoContainer: {
-    gap: 8,
+    gap: SPACING.xs,
   },
   acaoBox: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     width: '100%',
-    gap: 8,
+    gap: SPACING.xs,
   },
   movimentacoesContainer: {
-    gap: 8,
-    paddingBottom: 8,
+    gap: SPACING.xxs,
+    paddingBottom: SPACING.xs,
   },
 })

@@ -1,5 +1,6 @@
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native'
 import { useAuth } from '@/hooks/useAuth'
+import { COLORS, SPACING, FONTS, RADIUS } from '@/theme'
 
 export default function Perfil() {
   const { signOut } = useAuth()
@@ -19,27 +20,29 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#1C1C1C',
-    paddingHorizontal: 12,
-    paddingTop: 36,
+    backgroundColor: COLORS.cinzaEscuro,
+    paddingHorizontal: SPACING.sm,
+    paddingTop: SPACING.xxl,
   },
   title: {
-    color: '#F5F5F5', 
-    fontSize: 28, 
-    fontWeight: 'bold', 
-    marginBottom: 10,
+    color: COLORS.brancoTexto, 
+    fontSize: FONTS.size.lg,
+    fontWeight: FONTS.weight.bold,
+    marginTop: SPACING.lg,
+    marginBottom: SPACING.xs,
+    marginLeft: SPACING.xs,
   },
   button: {
     width: "100%",
-    height: 60,
-    backgroundColor: '#FF8C00',
+    height: 50,
+    backgroundColor: COLORS.laranjaStock,
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: 8,
+    borderRadius: RADIUS.md,
   },
   buttonText: {
-    color: '#F5F5F5', 
-    fontSize: 16, 
-    fontWeight: 'bold', 
+    color: COLORS.brancoTexto, 
+    fontSize: FONTS.size.lg, 
+    fontWeight: FONTS.weight.bold, 
   },
 })

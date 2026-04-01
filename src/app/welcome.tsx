@@ -1,5 +1,6 @@
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native'
 import { router } from 'expo-router'
+import { COLORS, SPACING, FONTS, RADIUS } from '@/theme'
 
 export default function Welcome() {
   return (
@@ -23,46 +24,46 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#1C1C1C',
-    paddingHorizontal: 12,
-    paddingTop: 36,
+    backgroundColor: COLORS.cinzaEscuro,
+    paddingHorizontal: SPACING.sm,
+    paddingTop: SPACING.xxl,
   },
   logoBox: {
-    padding: 24,
-    borderWidth: 2,
-    borderColor: '#FF8C00',
-    borderRadius: 10,
     alignItems: 'center',
-    marginBottom: 40,
+    padding: SPACING.lg,
+    marginBottom: SPACING.xxl,
+    borderColor: COLORS.laranjaStock,
+    borderRadius: RADIUS.sm,
+    borderWidth: 2,
   },
   logoText: {
-    color: '#FF8C00',
-    fontSize: 28,
-    fontWeight: 'bold',
+    color: COLORS.laranjaStock,
+    fontSize: FONTS.size.xl,
+    fontWeight: FONTS.weight.bold,
   },
   title: { 
-    color: '#F5F5F5', 
-    fontSize: 28, 
-    fontWeight: 'bold', 
-    marginBottom: 10,
+    color: COLORS.brancoTexto, 
+    fontSize: FONTS.size.xl, 
+    fontWeight: FONTS.weight.bold, 
+    marginBottom: SPACING.sm,
   },
   subtitle: { 
-    color: '#9E9E9E', 
-    fontSize: 16, 
     textAlign: 'center',
-    marginBottom: 40,
+    color: COLORS.cinzaTexto, 
+    fontSize: FONTS.size.md, 
+    marginBottom: SPACING.xl,
   },
   button: {
-    width: "100%",
-    height: 60,
-    backgroundColor: '#FF8C00',
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: 8,
+    width: "100%",
+    height: 60,
+    backgroundColor: COLORS.laranjaStock,
+    borderRadius: RADIUS.sm,
   },
   buttonText: { 
-    color: '#F5F5F5', 
-    fontSize: 16, 
-    fontWeight: 'bold', 
+    color: COLORS.brancoTexto, 
+    fontSize: FONTS.size.md, 
+    fontWeight: FONTS.weight.bold, 
   },
 })
