@@ -1,57 +1,52 @@
-import { useState, useCallback, useMemo } from 'react'
+import { useState, useCallback, useMemo, useEffect } from 'react'
 import { 
   View, 
-  Text, 
   StyleSheet, 
   TextInput, 
   FlatList, 
-  ActivityIndicator,
-  TouchableOpacity 
+  TouchableOpacity,
+  RefreshControl
 } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
-import { useFocusEffect } from 'expo-router'
 import { supabase } from '@/lib/supabase'
 import { COLORS, SPACING, FONTS, RADIUS } from '@/theme'
 import CardProdutos from '@/components/CardProdutos'
 import ModalProdutos from '@/components/ModalProdutos'
 
 export default function Estoque() {
+  const [refreshing, setRefreshing] = useState(false)
   const [busca, setBusca] = useState('')
   const [isFocused, setIsFocused] = useState(false)
-  const [dadosProdutos, setDadosProdutos] = useState<any[]>([])
-  const [loading, setLoading] = useState(true)
   const [modalVisivel, setModalVisivel] = useState(false)
+  const [dadosProdutos, setDadosProdutos] = useState<any[]>([])
   const [produtoSelecionado, setProdutoSelecionado] = useState<any>(null)
 
-  // FUNÇÃO DE BUSCA NO BANCO
-  const carregarProdutos = async () => {
-    try {
-      setLoading(true)
-      const { data, error } = await supabase
-        .from('produtos')
-        .select(`
-          id, nome, medida, codigo_barras, estoque_atual,
-          marcas (nome), categorias (nome)
-        `)
-        .order('nome', { ascending: true })
+  // 1. FUNÇÃO DE BUSCAR DADOS
+  const buscarProdutosNoSupabase = async () => {
+    const { data, error } = await supabase
+      .from('produtos')
+      .select(`
+        id, nome, medida, codigo_barras, estoque_atual,
+        marcas (nome), categorias (nome)
+      `)
+      .order('nome', { ascending: true })
 
-      if (error) throw error
-      if (data) setDadosProdutos(data)
-    } catch (error) {
-      console.error("Erro ao buscar produtos:", error)
-    } finally {
-      setLoading(false)
-    }
+    if (error) throw error
+    return data || []
   }
 
-  // ATUALIZAR AO ENTRAR NA TELA
-  useFocusEffect(
-    useCallback(() => {
-      carregarProdutos()
-    }, [])
-  )
+  // 2. FUNÇÃO DE CARREGAR DADOS
+  const orquestrarCarregamento = useCallback(async () => {
+    try {
+      const produtosBrutos = await buscarProdutosNoSupabase()
+      setDadosProdutos(produtosBrutos)
+    } catch (error) {
+      console.error("Erro ao carregar estoque:", error)
+    }
+  }, [])
 
-  // LÓGICA DE PESQUISA
+  // ==========================================
+  // 3. FUNÇÃO DE PESQUISA
   const produtosFiltrados = useMemo(() => {
     const termo = busca.trim().toLowerCase()
 
@@ -67,7 +62,35 @@ export default function Estoque() {
     })
   }, [busca, dadosProdutos])
 
-  // ABRIR MODAL
+  const limparBusca = () => {
+    setBusca('')
+  }
+
+  // ==========================================
+  // GATILHOS
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true)
+    await orquestrarCarregamento()
+    setRefreshing(false)
+  }, [orquestrarCarregamento])
+
+  useEffect(() => {
+    orquestrarCarregamento()
+
+    const canalTempoReal = supabase
+      .channel('atualizacoes-lista-produtos')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'produtos' }, () => {
+        orquestrarCarregamento()
+      })
+      .subscribe()
+
+    return () => {
+      supabase.removeChannel(canalTempoReal)
+    }
+  }, [orquestrarCarregamento])
+
+  // ==========================================
+  // FUNÇÃO DE ABRIR MODAL
   const abrirModal = (item: any) => {
     setProdutoSelecionado({
       nome: item.nome,
@@ -79,13 +102,12 @@ export default function Estoque() {
     })
     setModalVisivel(true)
   }
+
   return (
     <>
       <View style={styles.container}>
         {/* BARRA DE PESQUISA */}
-        <View 
-          style={[ styles.searchContainer, isFocused && styles.searchContainerFocused ]}
-        >
+        <View style={[ styles.searchContainer, isFocused && styles.searchContainerFocused ]}>
           <Ionicons name="search-outline" size={24} color={isFocused ? COLORS.laranjaStock : COLORS.cinzaTexto} />
           <TextInput
             style={styles.searchInput}
@@ -96,41 +118,39 @@ export default function Estoque() {
             value={busca}
             onChangeText={setBusca}
           />
-          {/* BOTÃO DE LIMPAR BUSCA */}
           {busca !== '' && (
-            <TouchableOpacity onPress={() => setBusca('')}>
+            <TouchableOpacity onPress={limparBusca}>
               <Ionicons name="close-circle" size={20} color={COLORS.cinzaTexto} />
             </TouchableOpacity>
           )}
         </View>
         
-        {/* SECTION ESTOQUE */}
-        <View
-          style={styles.estoqueContainer}
-        >
-          {loading ? (
-            <ActivityIndicator size="large" color={COLORS.laranjaStock} style={{ marginTop: SPACING.xxl }} />
-          ) : (
-            <FlatList
-              data={produtosFiltrados}
-              keyExtractor={(item) => item.id.toString()}
-              showsVerticalScrollIndicator={false}
-              contentContainerStyle={styles.itensContainer}
-              ListEmptyComponent={() => (
-                <Text style={styles.emptyText}>Nenhum produto encontrado.</Text>
-              )}
-              renderItem={({ item }) => (
-                <CardProdutos 
-                  nome={item.nome}
-                  medida={item.medida}
-                  marca={item.marcas?.nome}
-                  estoque={item.estoque_atual}
-                  iconePadrao="cube-outline"
-                  onPress={() => abrirModal(item)}
-                />
-              )}
-            />
-          )}
+        {/* LISTA DE ESTOQUE */}
+        <View style={styles.estoqueContainer}>
+          <FlatList
+            data={produtosFiltrados}
+            keyExtractor={(item) => item.id.toString()}
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={styles.itensContainer}
+            refreshControl={
+              <RefreshControl 
+                refreshing={refreshing} 
+                onRefresh={onRefresh} 
+                colors={[COLORS.laranjaStock]} 
+                tintColor={COLORS.laranjaStock} 
+              />
+            }
+            renderItem={({ item }) => (
+              <CardProdutos 
+                nome={item.nome}
+                medida={item.medida}
+                marca={item.marcas?.nome}
+                estoque={item.estoque_atual}
+                iconePadrao="cube-outline"
+                onPress={() => abrirModal(item)}
+              />
+            )}
+          />
         </View>
       </View>
 
@@ -177,8 +197,7 @@ const styles = StyleSheet.create({
   },
   itensContainer: {
     gap: SPACING.xs,
-    paddingTop: SPACING.xs,
-    paddingBottom: 80,
+    paddingVertical: SPACING.xs,
   },
   emptyText: {
     textAlign: 'center',
