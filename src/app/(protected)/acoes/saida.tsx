@@ -16,19 +16,21 @@ import { COLORS, SPACING, FONTS, RADIUS } from '@/theme'
 export default function Saida() {
   return (
     <>
-      <View style={styles.container}>
-        {/* VIEW HEADER */}
-        <View style={styles.headerContainer}>
-          <TouchableOpacity 
-            onPress={() => router.replace('/home')} 
-            style={styles.backButton}
-          >
-            <Ionicons name="chevron-back" size={28} color={COLORS.brancoTexto} />
-          </TouchableOpacity>
-        </View>
+      <KeyboardAvoidingView style={{ flex: 1 }}>
+        <View style={styles.container}>
+          {/* SECTION HEADER */}
+          <View style={styles.headerContainer}>
+            <Text style={styles.headerTitle}>Saída de Estoque</Text>
+            <TouchableOpacity onPress={() => router.replace('/home')}>
+              <Ionicons name="close" size={24} color={COLORS.brancoTexto} />
+            </TouchableOpacity>
+          </View>
+
+          <View style={styles.divisor} />
 
         
-      </View>
+        </View>
+      </KeyboardAvoidingView>
     </>
   )
 }
@@ -43,15 +45,17 @@ const styles = StyleSheet.create({
   headerContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    width: '100%',
-    marginBottom: SPACING.xs,
+    justifyContent: 'space-between',
+    marginBottom: SPACING.md,
   },
-  backButton: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    width: 44,
-    height: 44,
-    borderRadius: RADIUS.xl,
+  headerTitle: {
+    color: COLORS.brancoTexto,
+    fontSize: FONTS.size.xl,
+    fontWeight: FONTS.weight.bold,
+  },
+  divisor: {
+    height: 1,
     backgroundColor: COLORS.cinzaMedio,
+    marginBottom: SPACING.md,
   },
 })
