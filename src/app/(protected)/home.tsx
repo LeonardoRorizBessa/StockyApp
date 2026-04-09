@@ -20,7 +20,6 @@ export default function Home() {
   const [dadosResumo, setDadosResumo] = useState<any[]>([])
   const [dadosMovimentacoes, setDadosMovimentacoes] = useState<any[]>([])
 
-  // ==========================================
   // 1. FUNÇÃO DE BUSCAR DADOS
   const buscarDados = async () => {
     const resProdutos = await supabase.from('produtos').select('id, estoque_atual')
@@ -38,7 +37,6 @@ export default function Home() {
     }
   }
 
-  // ==========================================
   // 2. FUNÇÃO DE CALCULAR RESUMO
   const calcularResumo = (produtos: any[], movimentacoes: any[]) => {
     const totalUnidades = produtos.reduce((soma, p) => soma + (p.estoque_atual || 0), 0)
@@ -67,7 +65,6 @@ export default function Home() {
     ]
   }
 
-  // ==========================================
   // 3. FUNÇÃO DE FORMATAÇÃO DE MOVIMENTAÇÕES
   const formatarMovimentacoes = (movimentacoes: any[]) => {
     return movimentacoes.slice(0, 5).map(mov => ({
@@ -81,7 +78,6 @@ export default function Home() {
     }))
   }
 
-  // ==========================================
   // 4. FUNÇÃO DE CARREGAR DADOS
   const carregarDados = useCallback(async () => {
     try {
@@ -98,7 +94,6 @@ export default function Home() {
     }
   }, [])
 
-  // ==========================================
   // GATILHOS
   const onRefresh = useCallback(async () => {
     setRefreshing(true)
@@ -240,7 +235,6 @@ const styles = StyleSheet.create({
   },
   infosContainer: {
     gap: SPACING.xs,
-    paddingRight: SPACING.md,
   },
   acaoContainer: {
     gap: SPACING.xs,

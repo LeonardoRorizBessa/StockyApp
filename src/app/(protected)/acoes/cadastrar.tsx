@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { 
   View, 
   StyleSheet, 
@@ -7,49 +7,117 @@ import {
   TouchableOpacity, 
   ScrollView, 
   KeyboardAvoidingView, 
-  Platform 
+  Platform,
+  Alert,
+  ActivityIndicator
 } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { router } from 'expo-router'
+import { supabase } from '@/lib/supabase'
 import { COLORS, SPACING, FONTS, RADIUS } from '@/theme'
 import ModalSeletor from '@/components/ModalSeletor'
-
-// Dados provisórios para testar o visual
-const MARCAS_MOCK = [{ id: 1, nome: 'Camil' }, { id: 2, nome: 'Nestlé' }, { id: 3, nome: 'Coca-Cola' }]
-const CATEGORIAS_MOCK = [{ id: 1, nome: 'Grãos' }, { id: 2, nome: 'Bebidas' }, { id: 3, nome: 'Limpeza' }]
 
 export default function Cadastrar() {
   const [nome, setNome] = useState('')
   const [codigoBarras, setCodigoBarras] = useState('')
   const [medida, setMedida] = useState('')
-  
-  // Estados para guardar O QUE foi selecionado (id e nome)
   const [marcaSelecionada, setMarcaSelecionada] = useState<any>(null)
   const [categoriaSelecionada, setCategoriaSelecionada] = useState<any>(null)
-
-  // Estados para controlar os Modais
+  const [isSubmitting, setIsSubmitting] = useState(false)
   const [modalMarcaVisivel, setModalMarcaVisivel] = useState(false)
   const [modalCategoriaVisivel, setModalCategoriaVisivel] = useState(false)
+  const [listaMarcas, setListaMarcas] = useState<any[]>([])
+  const [listaCategorias, setListaCategorias] = useState<any[]>([])
 
-  const handleSalvar = () => {
-    console.log({ 
-      nome, codigoBarras, medida, 
-      marca: marcaSelecionada?.nome, 
-      categoria: categoriaSelecionada?.nome 
-    })
-  }
+  // BUSCAR MARCAS E CATEGORIAS
+  useEffect(() => {
+    const carregarListas = async () => {
+      const { data: marcasData } = await supabase.from('marcas').select('id, nome').order('nome')
+      const { data: categoriasData } = await supabase.from('categorias').select('id, nome').order('nome')
+      
+      if (marcasData) setListaMarcas(marcasData)
+      if (categoriasData) setListaCategorias(categoriasData)
+    }
+    carregarListas()
+  }, [])
 
-  // Ações do Modal de Marca
+  // AÇÕES DOS MODAIS
   const selecionarMarca = (item: any) => setMarcaSelecionada(item)
   const adicionarMarca = (novoNome: string) => {
-    // Provisório: Cria uma marca falsa só para mostrar na tela
     setMarcaSelecionada({ id: 'novo', nome: novoNome })
   }
 
-  // Ações do Modal de Categoria
   const selecionarCategoria = (item: any) => setCategoriaSelecionada(item)
   const adicionarCategoria = (novoNome: string) => {
     setCategoriaSelecionada({ id: 'novo', nome: novoNome })
+  }
+
+  // FUNÇÃO PARA LIMPAR O FORMULÁRIO
+  const limparFormulario = () => {
+    setNome('')
+    setCodigoBarras('')
+    setMedida('')
+    setMarcaSelecionada(null)
+    setCategoriaSelecionada(null)
+  }
+
+  // SALVAR TUDO NO BANCO DE DADOS
+  const handleSalvar = async () => {
+    if (!nome.trim() || !marcaSelecionada || !categoriaSelecionada || !medida.trim() || !codigoBarras.trim()) {
+      Alert.alert("Atenção", "Por favor, preencha todos os campos.")
+      return
+    }
+
+    setIsSubmitting(true)
+
+    try {
+      let finalMarcaId = marcaSelecionada.id
+      if (finalMarcaId === 'novo') {
+        const { data, error } = await supabase
+          .from('marcas')
+          .insert({ nome: marcaSelecionada.nome })
+          .select()
+          .single()
+        
+        if (error) throw error
+        finalMarcaId = data.id
+      }
+
+      let finalCategoriaId = categoriaSelecionada.id
+      if (finalCategoriaId === 'novo') {
+        const { data, error } = await supabase
+          .from('categorias')
+          .insert({ nome: categoriaSelecionada.nome })
+          .select()
+          .single()
+        
+        if (error) throw error
+        finalCategoriaId = data.id
+      }
+
+      const { error: produtoError } = await supabase
+        .from('produtos')
+        .insert({
+          nome: nome.trim(),
+          marca_id: finalMarcaId,
+          categoria_id: finalCategoriaId,
+          medida: medida.trim(),
+          codigo_barras: codigoBarras.trim(),
+          estoque_atual: 0,
+        })
+
+      if (produtoError) throw produtoError
+
+      Alert.alert("Sucesso", "Produto cadastrado com sucesso!", [
+        { text: "OK", onPress: () => {router.replace('/home'), limparFormulario()} }
+      ])
+
+    } catch (error) {
+      console.error("Erro ao salvar:", error)
+      Alert.alert("Erro", "Não foi possível cadastrar o produto. Tente novamente.")
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (
@@ -59,7 +127,7 @@ export default function Cadastrar() {
           {/* SECTION HEADER */}
           <View style={styles.headerContainer}>
             <Text style={styles.headerTitle}>Cadastrar Produto</Text>
-            <TouchableOpacity onPress={() => router.replace('/home')}>
+            <TouchableOpacity onPress={() => {router.replace('/home'), limparFormulario()}}>
               <Ionicons name="close" size={24} color={COLORS.brancoTexto} />
             </TouchableOpacity>
           </View>
@@ -67,7 +135,7 @@ export default function Cadastrar() {
           <View style={styles.divisor} />
           
           {/* SECTION FORMULÁRIO */}
-          <View style={styles.formContainer}>
+          <ScrollView showsVerticalScrollIndicator={false} style={styles.formContainer}>
             {/* NOME */}
             <View style={styles.inputGroup}>
               <Text style={styles.label}>Nome</Text>
@@ -128,18 +196,27 @@ export default function Cadastrar() {
             </View>
 
             {/* BOTÃO */}
-            <TouchableOpacity style={styles.buttonSalvar} activeOpacity={0.8} onPress={handleSalvar}>
-              <Text style={styles.buttonSalvarText}>Cadastrar</Text>
+            <TouchableOpacity 
+              style={[styles.buttonSalvar, isSubmitting && styles.buttonSalvarDisabled]} 
+                activeOpacity={0.8} 
+                onPress={handleSalvar}
+                disabled={isSubmitting}
+            >
+              {isSubmitting ? (
+                <ActivityIndicator color={COLORS.brancoTexto} />
+              ) : (
+                <Text style={styles.buttonSalvarText}>Cadastrar</Text>
+              )}
             </TouchableOpacity>
-          </View>
+          </ScrollView>
         </View>
 
-        {/* COMPONENTES DOS MODAIS */}
+        {/* MODAIS */}
         <ModalSeletor
           visible={modalMarcaVisivel}
           onClose={() => setModalMarcaVisivel(false)}
           titulo="Marca"
-          dados={MARCAS_MOCK}
+          dados={listaMarcas}
           onSelect={selecionarMarca}
           onAdd={adicionarMarca}
         />
@@ -147,7 +224,7 @@ export default function Cadastrar() {
           visible={modalCategoriaVisivel}
           onClose={() => setModalCategoriaVisivel(false)}
           titulo="Categoria"
-          dados={CATEGORIAS_MOCK}
+          dados={listaCategorias}
           onSelect={selecionarCategoria}
           onAdd={adicionarCategoria}
         />
@@ -223,7 +300,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: COLORS.laranjaStock,
     borderRadius: RADIUS.md,
-    marginTop: SPACING.md,
+  },
+  buttonSalvarDisabled: {
+    opacity: 0.7,
   },
   buttonSalvarText: {
     color: COLORS.brancoTexto,
