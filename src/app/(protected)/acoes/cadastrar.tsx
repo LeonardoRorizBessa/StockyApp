@@ -5,9 +5,6 @@ import {
   Text, 
   TextInput, 
   TouchableOpacity, 
-  ScrollView, 
-  KeyboardAvoidingView, 
-  Platform,
   Alert,
   ActivityIndicator
 } from 'react-native'
