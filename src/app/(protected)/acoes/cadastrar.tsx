@@ -61,6 +61,18 @@ export default function Cadastrar() {
     setCategoriaSelecionada(null)
   }
 
+  // FUNÇÃO AUXILIAR DE VERIFICAÇÃO DE DUPLICATAS
+  const verificarDuplicatas = async (tabela: string, coluna: string, valor: string) => {
+    const { data, error } = await supabase
+      .from(tabela)
+      .select('id')
+      .ilike(coluna, valor)
+      .limit(1)
+      .single()
+    
+    return data ? data.id : null
+  }
+
   // SALVAR TUDO NO BANCO DE DADOS
   const handleSalvar = async () => {
     if (!nome.trim() || !marcaSelecionada || !categoriaSelecionada || !medida.trim() || !codigoBarras.trim()) {
@@ -71,28 +83,43 @@ export default function Cadastrar() {
     setIsSubmitting(true)
 
     try {
+      const barrasExiste = await verificarDuplicatas('produtos', 'codigo_barras', codigoBarras.trim())
+      if (barrasExiste) {
+        Alert.alert("Atenção", "Já existe um produto cadastrado com este Código de Barras.")
+        setIsSubmitting(false)
+        return
+      }
+
       let finalMarcaId = marcaSelecionada.id
       if (finalMarcaId === 'novo') {
-        const { data, error } = await supabase
-          .from('marcas')
-          .insert({ nome: marcaSelecionada.nome })
-          .select()
-          .single()
-        
-        if (error) throw error
-        finalMarcaId = data.id
+        const marcaJaExiste = await verificarDuplicatas('marcas', 'nome', marcaSelecionada.nome)
+        if (marcaJaExiste) {
+          finalMarcaId = marcaJaExiste
+        } else {
+          const { data, error } = await supabase
+            .from('marcas')
+            .insert({ nome: marcaSelecionada.nome })
+            .select()
+            .single()
+          if (error) throw error
+          finalMarcaId = data.id
+        }
       }
 
       let finalCategoriaId = categoriaSelecionada.id
       if (finalCategoriaId === 'novo') {
-        const { data, error } = await supabase
-          .from('categorias')
-          .insert({ nome: categoriaSelecionada.nome })
-          .select()
-          .single()
-        
-        if (error) throw error
-        finalCategoriaId = data.id
+        const categoriaJaExiste = await verificarDuplicatas('categorias', 'nome', categoriaSelecionada.nome)
+        if (categoriaJaExiste) {
+          finalCategoriaId = categoriaJaExiste
+        } else {
+          const { data, error } = await supabase
+            .from('categorias')
+            .insert({ nome: categoriaSelecionada.nome })
+            .select()
+            .single()
+          if (error) throw error
+          finalCategoriaId = data.id
+        }
       }
 
       const { error: produtoError } = await supabase
@@ -109,7 +136,7 @@ export default function Cadastrar() {
       if (produtoError) throw produtoError
 
       Alert.alert("Sucesso", "Produto cadastrado com sucesso!", [
-        { text: "OK", onPress: () => {router.replace('/home'), limparFormulario()} }
+        { text: "OK", onPress: () => {router.replace('/home'); limparFormulario()} }
       ])
 
     } catch (error) {
@@ -122,113 +149,111 @@ export default function Cadastrar() {
 
   return (
     <>
-      <KeyboardAvoidingView style={{ flex: 1 }}>
-        <View style={styles.container}>
-          {/* SECTION HEADER */}
-          <View style={styles.headerContainer}>
-            <Text style={styles.headerTitle}>Cadastrar Produto</Text>
-            <TouchableOpacity onPress={() => {router.replace('/home'), limparFormulario()}}>
-              <Ionicons name="close" size={24} color={COLORS.brancoTexto} />
+      <View style={styles.container}>
+        {/* SECTION HEADER */}
+        <View style={styles.headerContainer}>
+          <Text style={styles.headerTitle}>Cadastrar Produto</Text>
+          <TouchableOpacity onPress={() => {router.replace('/home'), limparFormulario()}}>
+            <Ionicons name="close" size={24} color={COLORS.brancoTexto} />
+          </TouchableOpacity>
+        </View>
+
+        <View style={styles.divisor} />
+        
+        {/* SECTION FORMULÁRIO */}
+        <View style={styles.formContainer}>
+          {/* NOME */}
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>Nome</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Ex: Arroz Branco"
+              placeholderTextColor={COLORS.cinzaTexto}
+              value={nome}
+              onChangeText={setNome}
+            />
+          </View>
+
+          {/* MARCA */}
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>Marca</Text>
+            <TouchableOpacity style={styles.selector} activeOpacity={0.8} onPress={() => setModalMarcaVisivel(true)}>
+              <Text style={marcaSelecionada ? styles.inputText : styles.placeholderText}>
+                {marcaSelecionada ? marcaSelecionada.nome : 'Selecionar ou Adicionar'}
+              </Text>
+              <Ionicons name="chevron-down" size={20} color={COLORS.cinzaTexto} />
             </TouchableOpacity>
           </View>
 
-          <View style={styles.divisor} />
-          
-          {/* SECTION FORMULÁRIO */}
-          <ScrollView showsVerticalScrollIndicator={false} style={styles.formContainer}>
-            {/* NOME */}
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>Nome</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="Ex: Arroz Branco"
-                placeholderTextColor={COLORS.cinzaTexto}
-                value={nome}
-                onChangeText={setNome}
-              />
-            </View>
-
-            {/* MARCA */}
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>Marca</Text>
-              <TouchableOpacity style={styles.selector} activeOpacity={0.8} onPress={() => setModalMarcaVisivel(true)}>
-                <Text style={marcaSelecionada ? styles.inputText : styles.placeholderText}>
-                  {marcaSelecionada ? marcaSelecionada.nome : 'Selecionar ou Adicionar'}
-                </Text>
-                <Ionicons name="chevron-down" size={20} color={COLORS.cinzaTexto} />
-              </TouchableOpacity>
-            </View>
-
-            {/* CATEGORIA */}
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>Categoria</Text>
-              <TouchableOpacity style={styles.selector} activeOpacity={0.8} onPress={() => setModalCategoriaVisivel(true)}>
-                <Text style={categoriaSelecionada ? styles.inputText : styles.placeholderText}>
-                  {categoriaSelecionada ? categoriaSelecionada.nome : 'Selecionar ou Adicionar'}
-                </Text>
-                <Ionicons name="chevron-down" size={20} color={COLORS.cinzaTexto} />
-              </TouchableOpacity>
-            </View>
-
-            {/* MEDIDA */}
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>Medida</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="Ex: 1kg, 500ml, Unidade"
-                placeholderTextColor={COLORS.cinzaTexto}
-                value={medida}
-                onChangeText={setMedida}
-              />
-            </View>
-
-            {/* CÓDIGO DE BARRAS */}
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>Código de Barras</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="Ex: 7891020304050"
-                placeholderTextColor={COLORS.cinzaTexto}
-                keyboardType="numeric"
-                value={codigoBarras}
-                onChangeText={setCodigoBarras}
-              />
-            </View>
-
-            {/* BOTÃO */}
-            <TouchableOpacity 
-              style={[styles.buttonSalvar, isSubmitting && styles.buttonSalvarDisabled]} 
-                activeOpacity={0.8} 
-                onPress={handleSalvar}
-                disabled={isSubmitting}
-            >
-              {isSubmitting ? (
-                <ActivityIndicator color={COLORS.brancoTexto} />
-              ) : (
-                <Text style={styles.buttonSalvarText}>Cadastrar</Text>
-              )}
+          {/* CATEGORIA */}
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>Categoria</Text>
+            <TouchableOpacity style={styles.selector} activeOpacity={0.8} onPress={() => setModalCategoriaVisivel(true)}>
+              <Text style={categoriaSelecionada ? styles.inputText : styles.placeholderText}>
+                {categoriaSelecionada ? categoriaSelecionada.nome : 'Selecionar ou Adicionar'}
+              </Text>
+              <Ionicons name="chevron-down" size={20} color={COLORS.cinzaTexto} />
             </TouchableOpacity>
-          </ScrollView>
-        </View>
+          </View>
 
-        {/* MODAIS */}
-        <ModalSeletor
-          visible={modalMarcaVisivel}
-          onClose={() => setModalMarcaVisivel(false)}
-          titulo="Marca"
-          dados={listaMarcas}
-          onSelect={selecionarMarca}
-          onAdd={adicionarMarca}
-        />
-        <ModalSeletor
-          visible={modalCategoriaVisivel}
-          onClose={() => setModalCategoriaVisivel(false)}
-          titulo="Categoria"
-          dados={listaCategorias}
-          onSelect={selecionarCategoria}
-          onAdd={adicionarCategoria}
-        />
-      </KeyboardAvoidingView>
+          {/* MEDIDA */}
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>Medida</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Ex: 1kg, 500ml, Unidade"
+              placeholderTextColor={COLORS.cinzaTexto}
+              value={medida}
+              onChangeText={setMedida}
+            />
+          </View>
+
+          {/* CÓDIGO DE BARRAS */}
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>Código de Barras</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Ex: 7891020304050"
+              placeholderTextColor={COLORS.cinzaTexto}
+              keyboardType="numeric"
+              value={codigoBarras}
+              onChangeText={setCodigoBarras}
+            />
+          </View>
+
+          {/* BOTÃO */}
+          <TouchableOpacity 
+            style={[styles.buttonSalvar, isSubmitting && styles.buttonSalvarDisabled]} 
+              activeOpacity={0.8} 
+              onPress={handleSalvar}
+              disabled={isSubmitting}
+          >
+            {isSubmitting ? (
+              <ActivityIndicator color={COLORS.brancoTexto} />
+            ) : (
+              <Text style={styles.buttonSalvarText}>Cadastrar</Text>
+            )}
+          </TouchableOpacity>
+        </View>
+      </View>
+
+      {/* MODAIS */}
+      <ModalSeletor
+        visible={modalMarcaVisivel}
+        onClose={() => setModalMarcaVisivel(false)}
+        titulo="Marca"
+        dados={listaMarcas}
+        onSelect={selecionarMarca}
+        onAdd={adicionarMarca}
+      />
+      <ModalSeletor
+        visible={modalCategoriaVisivel}
+        onClose={() => setModalCategoriaVisivel(false)}
+        titulo="Categoria"
+        dados={listaCategorias}
+        onSelect={selecionarCategoria}
+        onAdd={adicionarCategoria}
+      />
     </>
   )
 }
