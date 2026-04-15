@@ -22,8 +22,8 @@ export default function CardProdutos({
   
   const getCorEstoque = (quantidade: number) => {
     if (quantidade === 0) return '#D32F2F'
-    if (quantidade <= 5) return '#FF8C00'
-    return '#F5F5F5'
+    if (quantidade <= 4) return '#FF8C00'
+    return '#388E3C'
   }
 
   return (
@@ -37,6 +37,7 @@ export default function CardProdutos({
         <View style={styles.cardImage}>
           <Ionicons name={iconePadrao} size={48} color={COLORS.laranjaStock} />
         </View>
+
         {/* VIEW INFORMAÇÕES */}
         <View style={styles.cardInfo}>
           <Text style={styles.productName}>

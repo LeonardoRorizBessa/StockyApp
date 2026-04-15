@@ -7,47 +7,46 @@ import {
   TouchableOpacity, 
   TextInput, 
   FlatList,
-  KeyboardAvoidingView,
-  Platform
 } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { COLORS, SPACING, FONTS, RADIUS } from '@/theme'
 
 interface Props {
   visible: boolean;
-  onClose: () => void;
   titulo: string;
-  dados: { id: string | number, nome: string }[]; // A lista de opções (ex: marcas)
-  onSelect: (item: any) => void; // O que acontece ao clicar em um item existente
-  onAdd: (novoNome: string) => void; // O que acontece ao clicar em "Adicionar"
+  dados: { id: string | number, nome: string }[];
+  onSelect: (item: any) => void;
+  onAdd: (novoNome: string) => void;
+  onClose: () => void;
 }
 
-export default function ModalSeletor({ visible, onClose, titulo, dados, onSelect, onAdd }: Props) {
+export default function ModalSeletor({ 
+  visible, 
+  onClose, 
+  titulo, 
+  dados, 
+  onSelect, 
+  onAdd,
+}: Props) {
+
   const [busca, setBusca] = useState('')
 
-  // Filtra a lista com base no que foi digitado
   const itensFiltrados = useMemo(() => {
     if (!busca.trim()) return dados
     return dados.filter(item => item.nome.toLowerCase().includes(busca.toLowerCase()))
   }, [busca, dados])
 
-  // Verifica se o texto digitado é exatamente igual a algum item existente (para esconder o botão de adicionar se já existir)
   const itemJaExiste = dados.some(item => item.nome.toLowerCase() === busca.trim().toLowerCase())
   const mostrarBotaoAdicionar = busca.trim().length > 0 && !itemJaExiste
 
   const handleSelect = (item: any) => {
     onSelect(item)
-    setBusca('') // Limpa a busca para a próxima vez
+    setBusca('') 
     onClose()
   }
 
   const handleAdd = () => {
     onAdd(busca.trim())
-    setBusca('')
-    onClose()
-  }
-
-  const handleClose = () => {
     setBusca('')
     onClose()
   }
@@ -58,20 +57,26 @@ export default function ModalSeletor({ visible, onClose, titulo, dados, onSelect
         visible={visible}
         transparent={true}
         animationType="slide"
-        onRequestClose={handleClose}
+        onRequestClose={onClose}
+        statusBarTranslucent={true}
       >
-        <KeyboardAvoidingView style={styles.overlay}>
+        <View style={styles.overlay}>
+          {/* ÁREA DE FECHAMENTO */}
+          <TouchableOpacity 
+            style={styles.areaDeFechamento} 
+            activeOpacity={1}
+            onPress={onClose} 
+          />
+
+          {/* CONTEÚDO DO MODAL */}
           <View style={styles.modalContent}>
-            
-            {/* HEADER DO MODAL */}
             <View style={styles.header}>
               <Text style={styles.title}>Selecionar {titulo}</Text>
-              <TouchableOpacity onPress={handleClose} style={styles.closeButton}>
-                <Ionicons name="close" size={24} color={COLORS.brancoTexto} />
+              <TouchableOpacity onPress={onClose} style={styles.closeButton}>
+                <Ionicons name="close" size={24} color={COLORS.laranjaStock} />
               </TouchableOpacity>
             </View>
 
-            {/* BARRA DE PESQUISA */}
             <View style={styles.searchContainer}>
               <Ionicons name="search" size={20} color={COLORS.cinzaTexto} />
               <TextInput
@@ -80,7 +85,7 @@ export default function ModalSeletor({ visible, onClose, titulo, dados, onSelect
                 placeholderTextColor={COLORS.cinzaTexto}
                 value={busca}
                 onChangeText={setBusca}
-                autoFocus={true} // Já abre com o teclado pronto para digitar!
+                autoFocus={true} 
               />
               {busca !== '' && (
                 <TouchableOpacity onPress={() => setBusca('')}>
@@ -89,13 +94,12 @@ export default function ModalSeletor({ visible, onClose, titulo, dados, onSelect
               )}
             </View>
 
-            {/* LISTA DE RESULTADOS */}
             <FlatList
               data={itensFiltrados}
               keyExtractor={(item) => item.id.toString()}
               showsVerticalScrollIndicator={false}
               contentContainerStyle={styles.listContainer}
-              keyboardShouldPersistTaps="handled" // Permite clicar na lista sem o teclado fechar
+              keyboardShouldPersistTaps="handled" 
               ListEmptyComponent={() => (
                 !mostrarBotaoAdicionar && <Text style={styles.emptyText}>Nenhuma opção encontrada.</Text>
               )}
@@ -110,7 +114,6 @@ export default function ModalSeletor({ visible, onClose, titulo, dados, onSelect
               )}
             />
 
-            {/* BOTÃO ADICIONAR NOVO (Só aparece se não existir) */}
             {mostrarBotaoAdicionar && (
               <TouchableOpacity 
                 style={styles.addButton}
@@ -121,12 +124,10 @@ export default function ModalSeletor({ visible, onClose, titulo, dados, onSelect
                 <Text style={styles.addButtonText}>Adicionar "{busca.trim()}"</Text>
               </TouchableOpacity>
             )}
-
           </View>
-        </KeyboardAvoidingView>
+        </View>
       </Modal>
     </>
-
   )
 }
 
@@ -136,28 +137,35 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.6)',
     justifyContent: 'flex-end',
   },
+  areaDeFechamento: {
+    flex: 1,
+    width: '100%',
+  },
   modalContent: {
     backgroundColor: COLORS.cinzaEscuro,
-    borderTopLeftRadius: RADIUS.xl,
-    borderTopRightRadius: RADIUS.xl,
-    height: '80%', // Ocupa 80% da tela de baixo para cima
-    paddingHorizontal: SPACING.md,
-    paddingTop: SPACING.md,
-    paddingBottom: SPACING.xl,
+    borderTopLeftRadius: RADIUS.lg,
+    borderTopRightRadius: RADIUS.lg,
+    padding: SPACING.lg,
+    maxHeight: '75%',
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     marginBottom: SPACING.md,
   },
   title: {
     color: COLORS.brancoTexto,
-    fontSize: FONTS.size.lg,
+    fontSize: FONTS.size.xl,
     fontWeight: FONTS.weight.bold,
   },
   closeButton: {
-    padding: SPACING.xxs,
+    width: 36,
+    height: 36,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: RADIUS.xl,
+    backgroundColor: COLORS.cinzaMedio,
   },
   searchContainer: {
     flexDirection: 'row',
@@ -190,8 +198,8 @@ const styles = StyleSheet.create({
     fontSize: FONTS.size.md,
   },
   emptyText: {
-    color: COLORS.cinzaTexto,
     textAlign: 'center',
+    color: COLORS.cinzaTexto,
     marginTop: SPACING.xl,
   },
   addButton: {
