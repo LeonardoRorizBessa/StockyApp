@@ -6,6 +6,8 @@ import {
   TextInput, 
   TouchableOpacity,
   Image,
+  Alert,
+  ActivityIndicator,
 } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { router } from 'expo-router'
@@ -17,9 +19,23 @@ export default function SignIn() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [secureText, setSecureText] = useState(true)
+  const [isLoading, setIsLoading] = useState(false)
 
-  const handleSignIn = () => {
-    signIn()
+  const handleSignIn = async () => {
+    if (!email.trim() || !password.trim()) {
+      Alert.alert("Atenção", "Por favor, preencha seu e-mail e senha.")
+      return
+    }
+
+    setIsLoading(true)
+
+    const { error } = await signIn(email.trim(), password)
+
+    if (error) {
+      Alert.alert("Erro ao entrar", "E-mail ou senha incorretos. Verifique e tente novamente.")
+    } 
+
+    setIsLoading(false)
   }
 
   return (
@@ -81,8 +97,17 @@ export default function SignIn() {
         </View>
 
         {/* BUTÃO ENTRAR */}
-        <TouchableOpacity style={styles.button} onPress={handleSignIn}>
-          <Text style={styles.buttonText}>ENTRAR</Text>
+        <TouchableOpacity 
+          style={[styles.button, isLoading && { opacity: 0.7 }]} 
+          onPress={handleSignIn}
+          disabled={isLoading}
+          activeOpacity={0.8}
+        >
+          {isLoading ? (
+            <ActivityIndicator color={COLORS.laranjaStock} />
+          ) : (
+            <Text style={styles.buttonText}>ENTRAR</Text>
+          )}
         </TouchableOpacity>
       </View>
     </>
