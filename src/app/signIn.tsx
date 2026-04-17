@@ -4,9 +4,8 @@ import {
   Text, 
   StyleSheet, 
   TextInput, 
-  TouchableOpacity, 
-  KeyboardAvoidingView, 
-  ScrollView 
+  TouchableOpacity,
+  Image,
 } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { router } from 'expo-router'
@@ -24,103 +23,104 @@ export default function SignIn() {
   }
 
   return (
-    <KeyboardAvoidingView style={{ flex: 1 }}>
-      <ScrollView contentContainerStyle={styles.container} bounces={false}>
-        <View style={styles.content}>
-          
-          <TouchableOpacity 
-            style={styles.backButton} 
-            onPress={() => router.back()}
-          >
+    <>
+      <View style={styles.container}>
+        {/* VIEW HEADER */}
+        <View style={styles.header}>
+          <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
             <Ionicons name="arrow-back" size={28} color={COLORS.brancoTexto} />
           </TouchableOpacity>
-
-          <View style={styles.header}>
-            <Text style={styles.title}>Vamos entrar no seu</Text>
-            <Text style={styles.title}>STOCKY</Text>
-            <Text style={styles.subtitle}>Tenha controle sobre seu estoque a qualquer momento.</Text>
+          <View style={styles.logoContainer}>
+            <Image 
+              source={require('@/assets/logo.png')} 
+              style={styles.logoImage} 
+            />
+            <Text style={styles.title}>
+              STOCKY
+            </Text>
           </View>
+        </View>
 
-          <View style={styles.form}>
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>E-mail</Text>
+        {/* VIEW FORM */}
+        <View style={styles.form}>
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>E-mail</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Insira seu e-mail"
+              placeholderTextColor={COLORS.cinzaTexto}
+              value={email}
+              onChangeText={setEmail}
+              keyboardType="email-address"
+              autoCapitalize="none"
+            />
+          </View>
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>Senha</Text>
+            <View style={styles.passwordInputContainer}>
               <TextInput
-                style={styles.input}
-                placeholder="Insira seu e-mail"
+                style={[styles.input, { flex: 1, borderWidth: 0 }]}
+                placeholder="Insira sua senha"
                 placeholderTextColor={COLORS.cinzaTexto}
-                value={email}
-                onChangeText={setEmail}
-                keyboardType="email-address"
-                autoCapitalize="none"
+                value={password}
+                onChangeText={setPassword}
+                secureTextEntry={secureText}
               />
-            </View>
-
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>Senha</Text>
-              <View style={styles.passwordInputContainer}>
-                <TextInput
-                  style={[styles.input, { flex: 1, borderWidth: 0 }]}
-                  placeholder="Insira sua senha"
-                  placeholderTextColor={COLORS.cinzaTexto}
-                  value={password}
-                  onChangeText={setPassword}
-                  secureTextEntry={secureText}
+              <TouchableOpacity 
+                onPress={() => setSecureText(!secureText)} 
+                style={styles.eyeIconContainer}
+              >
+                <Ionicons 
+                  name={secureText ? "eye-off-outline" : "eye-outline"} 
+                  size={22} 
+                  color={COLORS.cinzaTexto} 
                 />
-                <TouchableOpacity 
-                  onPress={() => setSecureText(!secureText)} 
-                  style={styles.eyeIconContainer}
-                >
-                  <Ionicons 
-                    name={secureText ? "eye-off-outline" : "eye-outline"} 
-                    size={22} 
-                    color={COLORS.cinzaTexto} 
-                  />
-                </TouchableOpacity>
-              </View>
+              </TouchableOpacity>
             </View>
           </View>
         </View>
 
-        <View style={styles.footer}>
-          <TouchableOpacity style={styles.loginButton} onPress={handleSignIn}>
-            <Text style={styles.loginButtonText}>Entrar</Text>
-          </TouchableOpacity>
-        </View>
-      </ScrollView>
-    </KeyboardAvoidingView>
-  );
+        {/* BUTÃO ENTRAR */}
+        <TouchableOpacity style={styles.button} onPress={handleSignIn}>
+          <Text style={styles.buttonText}>ENTRAR</Text>
+        </TouchableOpacity>
+      </View>
+    </>
+  )
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    alignItems: 'center',
+    justifyContent: 'space-between',
     backgroundColor: COLORS.cinzaEscuro,
-    paddingHorizontal: SPACING.sm,
-    paddingTop: SPACING.xxl,
-  },
-  content: {
-    flex: 1, 
-  },
-  backButton: {
-    justifyContent: 'center',
-    width: 40,
-    height: 40,
-    marginBottom: SPACING.md,
+    paddingHorizontal: SPACING.lg,
+    paddingVertical: SPACING.xxl,
   },
   header: {
-    marginBottom: SPACING.xxl,
+    width: '100%',
+    gap: SPACING.sm,
+  },
+  backButton: {
+    width: 40,
+    height: 40,
+  },
+  logoContainer: {
+    alignItems: 'center',
+    gap: SPACING.lg,
+  },
+  logoImage: {
+    width: 100,
+    height: 100,
   },
   title: {
-    color: COLORS.brancoTexto,
+    color: COLORS.laranjaStock,
     fontSize: FONTS.size.xxl,
     fontWeight: FONTS.weight.bold,
   },
-  subtitle: {
-    color: COLORS.cinzaTexto,
-    fontSize: FONTS.size.lg,
-    marginTop: SPACING.sm,
-  },
   form: {
+    width: '100%',
     gap: SPACING.lg, 
   },
   inputGroup: {
@@ -152,23 +152,21 @@ const styles = StyleSheet.create({
   },
   eyeIconContainer: {
     justifyContent: 'center',
-        paddingHorizontal: SPACING.md,
+    paddingHorizontal: SPACING.md,
   },
-  footer: {
-    justifyContent: 'flex-end',
-    marginBottom: SPACING.xxl, 
-  },
-  loginButton: {
+  button: {
+    height: 60,
+    width: "100%",
     alignItems: 'center',
     justifyContent: 'center',
-    width: "100%",
-    height: 60,
-    backgroundColor: COLORS.laranjaStock,
+    backgroundColor: 'transparent',
+    borderColor: COLORS.laranjaStock,
+    borderWidth: 2,
     borderRadius: RADIUS.sm,
   },
-  loginButtonText: {
-    color: COLORS.brancoTexto,
-    fontSize: FONTS.size.lg,
+  buttonText: {
+    color: COLORS.laranjaStock,
+    fontSize: FONTS.size.md,
     fontWeight: FONTS.weight.bold,
   },
 })

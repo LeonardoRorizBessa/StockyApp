@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { View, Text, StyleSheet } from 'react-native'
+import { View, Text, StyleSheet, Image } from 'react-native'
 import { router } from 'expo-router'
 import { useAuth } from '@/hooks/useAuth'
 import { COLORS, SPACING, FONTS, RADIUS } from '@/theme'
@@ -26,10 +26,16 @@ export default function CustomSplash() {
   return (
     <View style={styles.container}>
       <View style={styles.logoBox}>
-        <Text style={styles.logoText}>STOCKY</Text>
+        <Image 
+          source={require('@/assets/logo.png')} 
+          style={styles.logoImage} 
+        />
+        <Text style={styles.logoText}>
+          STOCKY
+        </Text>
       </View>
     </View>
-  );
+  )
 }
 
 const styles = StyleSheet.create({
@@ -42,9 +48,11 @@ const styles = StyleSheet.create({
   logoBox: {
     alignItems: 'center',
     padding: SPACING.lg,
-    borderColor: COLORS.laranjaStock,
-    borderRadius: RADIUS.md,
-    borderWidth: 2,
+  },
+  logoImage: {
+    width: 80,
+    height: 80,
+    marginBottom: SPACING.xxl,
   },
   logoText: {
     color: COLORS.laranjaStock,

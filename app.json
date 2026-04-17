@@ -4,7 +4,7 @@
     "slug": "controle-estoque",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./src/assets/icone.png",
     "scheme": "controleestoque",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,

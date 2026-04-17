@@ -1,69 +1,80 @@
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native'
+import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native'
 import { router } from 'expo-router'
 import { COLORS, SPACING, FONTS, RADIUS } from '@/theme'
 
 export default function Welcome() {
   return (
-    <View style={styles.container}>
-      <View style={styles.logoBox}>
-        <Text style={styles.logoText}>STOCKY</Text>
-      </View>
+    <>
+      <View style={styles.container}>
+        <View style={styles.bvContainer}>
+          {/* LOGO */}
+          <Image 
+            source={require('@/assets/logo.png')} 
+            style={styles.logoImage} 
+          />
 
-      <Text style={styles.title}>Olá, seja bem-vindo!</Text>
-      <Text style={styles.subtitle}>Controle de estoque inteligente.</Text>
-      
-      <TouchableOpacity style={styles.button} onPress={() => router.push('/signIn')}>
-        <Text style={styles.buttonText}>Login</Text>
-      </TouchableOpacity>
-    </View>
+          {/* TEXTO BEM-VINDO */}
+          <View style={styles.fraseContainer}>
+            <Text style={styles.title}>Bem vindo de volta!</Text>
+            <Text style={styles.subtitle}>Gerencie seu estoque de forma fácil e eficiente.</Text>
+          </View>
+        </View>
+        
+        {/* BOTÃO LOGIN */}
+        <TouchableOpacity style={styles.button} onPress={() => router.push('/signIn')}>
+          <Text style={styles.buttonText}>LOGIN</Text>
+        </TouchableOpacity>
+      </View>
+    </>
   )
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
     alignItems: 'center',
+    justifyContent: 'space-between',
     backgroundColor: COLORS.cinzaEscuro,
-    paddingHorizontal: SPACING.sm,
-    paddingTop: SPACING.xxl,
+    paddingHorizontal: SPACING.lg,
+    paddingVertical: SPACING.xxl,
   },
-  logoBox: {
+  bvContainer: {
+    flex: 1,
     alignItems: 'center',
-    padding: SPACING.lg,
-    marginBottom: SPACING.xxl,
-    borderColor: COLORS.laranjaStock,
-    borderRadius: RADIUS.sm,
-    borderWidth: 2,
+    justifyContent: 'center',
+    gap: SPACING.xxl,
   },
-  logoText: {
-    color: COLORS.laranjaStock,
-    fontSize: FONTS.size.xl,
-    fontWeight: FONTS.weight.bold,
+  logoImage: {
+    width: 100,
+    height: 100,
+  },
+  fraseContainer: {
+    alignItems: 'center',
+    gap: SPACING.xxs,
   },
   title: { 
     color: COLORS.brancoTexto, 
     fontSize: FONTS.size.xl, 
-    fontWeight: FONTS.weight.bold, 
-    marginBottom: SPACING.sm,
+    fontWeight: FONTS.weight.bold,
   },
   subtitle: { 
     textAlign: 'center',
     color: COLORS.cinzaTexto, 
-    fontSize: FONTS.size.md, 
-    marginBottom: SPACING.xl,
+    fontSize: FONTS.size.md,
   },
   button: {
+    height: 60,
+    width: "100%",
     alignItems: 'center',
     justifyContent: 'center',
-    width: "100%",
-    height: 60,
-    backgroundColor: COLORS.laranjaStock,
+    backgroundColor: 'transparent',
+    borderColor: COLORS.laranjaStock,
+    borderWidth: 2,
     borderRadius: RADIUS.sm,
   },
   buttonText: { 
-    color: COLORS.brancoTexto, 
+    color: COLORS.laranjaStock, 
     fontSize: FONTS.size.md, 
-    fontWeight: FONTS.weight.bold, 
+    fontWeight: FONTS.weight.bold,
   },
 })
