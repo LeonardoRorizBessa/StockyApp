@@ -13,6 +13,33 @@ import { COLORS, SPACING, FONTS, RADIUS } from '@/theme'
 import CardProdutos from '@/components/CardProdutos'
 import ModalProdutos from '@/components/ModalProdutos'
 
+const getIconeCategoria = (categoriaNome?: string): keyof typeof Ionicons.glyphMap => {
+  if (!categoriaNome) return 'bag-handle-outline'
+
+  const nomeNormalizado = categoriaNome.toLowerCase().trim()
+
+  switch (nomeNormalizado) {
+    case 'grãos': return 'basket-outline'
+    case 'massas': return 'restaurant-outline'
+    case 'padaria': return 'cafe-outline'
+    case 'carnes': return 'flame-outline'
+    case 'frios': return 'snow-outline'
+    case 'laticínios': return 'water-outline'
+    case 'frutas': return 'nutrition-outline'
+    case 'legumes': return 'nutrition-outline'
+    case 'verduras': return 'leaf-outline'
+    case 'bebidas': return 'wine-outline'
+    case 'limpeza': return 'sparkles-outline'
+    case 'higiene': return 'medkit-outline'
+    case 'temperos': return 'flask-outline'
+    case 'doces': return 'ice-cream-outline'
+    case 'lanches': return 'fast-food-outline'
+    case 'pet': return 'paw-outline'
+    case 'diversos': return 'cube-outline'
+    default: return 'bag-handle-outline'
+  }
+}
+
 export default function Estoque() {
   const [refreshing, setRefreshing] = useState(false)
   const [busca, setBusca] = useState('')
@@ -146,7 +173,7 @@ export default function Estoque() {
                 medida={item.medida}
                 marca={item.marcas?.nome}
                 estoque={item.estoque_atual}
-                iconePadrao="cube-outline"
+                iconePadrao={getIconeCategoria(item.categorias?.nome)}
                 onPress={() => abrirModal(item)}
               />
             )}

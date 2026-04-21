@@ -1,11 +1,36 @@
+import { useState, useEffect } from 'react'
 import { View, Text, StyleSheet, ScrollView, Alert } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { useAuth } from '@/hooks/useAuth'
+import { supabase } from '@/lib/supabase'
 import { COLORS, SPACING, FONTS, RADIUS } from '@/theme'
 import MenuItem from '@/components/MenuItem'
 
 export default function Perfil() {
   const { signOut } = useAuth()
+  const [nomeMercado, setNomeMercado] = useState()
+  const [nomeADM, setNomeADM] = useState()
+
+  useEffect(() => {
+    const carregarPerfil = async () => {
+      const { data: { user } } = await supabase.auth.getUser()
+
+      if (!user) return
+
+      const { data, error } = await supabase
+        .from('perfil')
+        .select('nome_mercado, nome_adm')
+        .eq('id', user.id)
+        .single()
+
+      if (data && !error) {
+        setNomeMercado(data.nome_mercado)
+        setNomeADM(data.nome_adm)
+      }
+    }
+
+    carregarPerfil()
+  }, [])
 
   const handleEmBreve = (funcionalidade: string) => {
     Alert.alert("Em Breve", `A tela de ${funcionalidade} será implementada em breve!`)
@@ -30,8 +55,8 @@ export default function Perfil() {
             <Ionicons name="person" size={24} color={COLORS.brancoTexto} />
           </View>
           <View style={styles.userInfo}>
-            <Text style={styles.userName}>Super Stocky</Text>
-            <Text style={styles.userRole}>Administrador • Alfred Black</Text>
+            <Text style={styles.userName}>{nomeMercado}</Text>
+            <Text style={styles.userRole}>Administrador • {nomeADM}</Text>
           </View>
         </View>
 
