@@ -19,6 +19,7 @@ export default function Home() {
   const [refreshing, setRefreshing] = useState(false)
   const [dadosResumo, setDadosResumo] = useState<any[]>([])
   const [dadosMovimentacoes, setDadosMovimentacoes] = useState<any[]>([])
+  const [nomeMercado, setNomeMercado] = useState()
 
   // 1. FUNÇÃO DE BUSCAR DADOS
   const buscarDados = async () => {
@@ -81,6 +82,18 @@ export default function Home() {
   // 4. FUNÇÃO DE CARREGAR DADOS
   const carregarDados = useCallback(async () => {
     try {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (user) {
+        const { data: perfilData } = await supabase
+          .from('perfil')
+          .select('nome_mercado')
+          .eq('id', user.id)
+          .single()
+          
+        if (perfilData) {
+          setNomeMercado(perfilData.nome_mercado)
+        }
+      }
       const { produtosBrutos, movimentacoesBrutas } = await buscarDados()
 
       const resumoProcessado = calcularResumo(produtosBrutos, movimentacoesBrutas)
@@ -125,6 +138,9 @@ export default function Home() {
         {/* SECTION HEADER */}
         <View style={styles.headerContainer}>
           <Avatar />
+          <Text style={styles.userName}>
+            {nomeMercado}
+          </Text>
         </View>
 
         <ScrollView 
@@ -221,6 +237,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     width: '100%',
     marginBottom: SPACING.xs,
+    gap: SPACING.sm,
+  },
+  userName: {
+    color: COLORS.brancoTexto,
+    fontSize: FONTS.size.lg,
+    fontWeight: FONTS.weight.bold,
   },
   scrollContent: {
     paddingBottom: SPACING.xs,
