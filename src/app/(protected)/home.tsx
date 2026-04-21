@@ -129,6 +129,7 @@ export default function Home() {
 
         <ScrollView 
           showsVerticalScrollIndicator={false}
+          contentContainerStyle={styles.scrollContent}
           refreshControl={
             <RefreshControl 
               refreshing={refreshing} 
@@ -221,9 +222,13 @@ const styles = StyleSheet.create({
     width: '100%',
     marginBottom: SPACING.xs,
   },
+  scrollContent: {
+    paddingBottom: SPACING.xs,
+  },
   title: {
-    color: COLORS.brancoTexto, 
-    fontSize: FONTS.size.lg,
+    textTransform: 'uppercase',
+    color: COLORS.cinzaTexto,
+    fontSize: FONTS.size.sm,
     fontWeight: FONTS.weight.bold,
     marginTop: SPACING.lg,
     marginBottom: SPACING.xs,
@@ -247,6 +252,5 @@ const styles = StyleSheet.create({
   },
   movimentacoesContainer: {
     gap: SPACING.xxs,
-    paddingBottom: SPACING.xs,
   },
 })
