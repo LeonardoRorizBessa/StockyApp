@@ -2,14 +2,15 @@ import { useEffect } from 'react'
 import { View, Text, StyleSheet, Image } from 'react-native'
 import { router } from 'expo-router'
 import { useAuth } from '@/hooks/useAuth'
-import { COLORS, SPACING, FONTS, RADIUS } from '@/theme'
+import { COLORS, SPACING, FONTS } from '@/theme'
 
 export default function CustomSplash() {
   const { isReady, isLoggedIn } = useAuth()
 
+  // Redireciona o usuário com base no estado de autenticação
   useEffect(() => {
     let timeout: ReturnType<typeof setTimeout>
-
+    
     if (isReady) {
       timeout = setTimeout(() => {
         if (isLoggedIn) {
@@ -19,22 +20,23 @@ export default function CustomSplash() {
         }
       }, 3000)
     }
-
     return () => clearTimeout(timeout)
   }, [isReady, isLoggedIn])
 
   return (
-    <View style={styles.container}>
-      <View style={styles.logoBox}>
-        <Image 
-          source={require('@/assets/logo.png')} 
-          style={styles.logoImage} 
-        />
-        <Text style={styles.logoText}>
-          STOCKY
-        </Text>
+    <>
+      <View style={styles.container}>
+        <View style={styles.logoBox}>
+          <Image 
+            source={require('@/assets/logo.png')} 
+            style={styles.logoImage} 
+          />
+          <Text style={styles.logoText}>
+            STOCKY
+          </Text>
+        </View>
       </View>
-    </View>
+    </>
   )
 }
 

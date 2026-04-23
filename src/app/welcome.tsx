@@ -6,21 +6,19 @@ export default function Welcome() {
   return (
     <>
       <View style={styles.container}>
-        <View style={styles.bvContainer}>
-          {/* LOGO */}
+        {/* HEADER */}
+        <View style={styles.header}>
           <Image 
             source={require('@/assets/logo.png')} 
             style={styles.logoImage} 
           />
-
-          {/* TEXTO BEM-VINDO */}
-          <View style={styles.fraseContainer}>
+          <View style={styles.welcomeView}>
             <Text style={styles.title}>Bem vindo de volta!</Text>
             <Text style={styles.subtitle}>Gerencie seu estoque de forma fácil e eficiente.</Text>
           </View>
         </View>
         
-        {/* BOTÃO LOGIN */}
+        {/* BUTTON */}
         <TouchableOpacity style={styles.button} onPress={() => router.push('/signIn')}>
           <Text style={styles.buttonText}>LOGIN</Text>
         </TouchableOpacity>
@@ -38,7 +36,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: SPACING.lg,
     paddingVertical: SPACING.xxl,
   },
-  bvContainer: {
+  header: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
@@ -48,7 +46,7 @@ const styles = StyleSheet.create({
     width: 100,
     height: 100,
   },
-  fraseContainer: {
+  welcomeView: {
     alignItems: 'center',
     gap: SPACING.xxs,
   },

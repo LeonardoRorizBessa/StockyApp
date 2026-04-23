@@ -13,7 +13,7 @@ export default function SignIn() {
   const [secureText, setSecureText] = useState(true)
   const [isLoading, setIsLoading] = useState(false)
 
-  // FUNÇÃO LOGIN
+  // Função para lidar com o processo de login
   const handleSignIn = async () => {
     if (!email.trim() || !password.trim()) {
       Toast.show({
@@ -41,7 +41,7 @@ export default function SignIn() {
   return (
     <>
       <View style={styles.container}>
-        {/* VIEW HEADER */}
+        {/* HEADER */}
         <View style={styles.header}>
           <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
             <Ionicons name="arrow-back" size={28} color={COLORS.brancoTexto} />
@@ -57,7 +57,7 @@ export default function SignIn() {
           </View>
         </View>
 
-        {/* VIEW FORM */}
+        {/* FORM */}
         <View style={styles.form}>
           <View style={styles.inputGroup}>
             <Text style={styles.label}>E-mail</Text>
@@ -96,7 +96,7 @@ export default function SignIn() {
           </View>
         </View>
 
-        {/* BUTÃO ENTRAR */}
+        {/* BUTTON */}
         <TouchableOpacity 
           style={[styles.button, isLoading && { opacity: 0.8 }]} 
           onPress={handleSignIn}
