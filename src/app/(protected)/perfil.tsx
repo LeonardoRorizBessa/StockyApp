@@ -1,41 +1,56 @@
-import { useState, useEffect } from 'react'
+import { useState, useCallback } from 'react'
 import { View, Text, StyleSheet, ScrollView, Alert } from 'react-native'
+import { useFocusEffect } from 'expo-router'
 import { Ionicons } from '@expo/vector-icons'
 import { useAuth } from '@/hooks/useAuth'
 import { supabase } from '@/lib/supabase'
 import { COLORS, SPACING, FONTS, RADIUS } from '@/theme'
 import MenuItem from '@/components/MenuItem'
+import Toast from 'react-native-toast-message'
 
 export default function Perfil() {
   const { signOut } = useAuth()
   const [nomeMercado, setNomeMercado] = useState()
   const [nomeADM, setNomeADM] = useState()
 
-  useEffect(() => {
-    const carregarPerfil = async () => {
-      const { data: { user } } = await supabase.auth.getUser()
+  // Função para buscar dados
+  useFocusEffect(
+    useCallback(() => {
+      const carregarPerfil = async () => {
+        try {
+          const { data: { user } } = await supabase.auth.getUser()
 
-      if (!user) return
+          if (!user) return
 
-      const { data, error } = await supabase
-        .from('perfil')
-        .select('nome_mercado, nome_adm')
-        .eq('id', user.id)
-        .single()
+          const { data, error } = await supabase
+            .from('perfil')
+            .select('nome_mercado, nome_adm')
+            .eq('id', user.id)
+            .single()
 
-      if (data && !error) {
-        setNomeMercado(data.nome_mercado)
-        setNomeADM(data.nome_adm)
+          if (data && !error) {
+            setNomeMercado(data.nome_mercado)
+            setNomeADM(data.nome_adm)
+          }
+        } catch (error) {
+          console.error("Erro ao carregar perfil:", error)
+        }
       }
-    }
 
-    carregarPerfil()
-  }, [])
+      carregarPerfil()
+    }, [])
+  )
 
+  // Função para mostrar mensagem de "Em Breve"
   const handleEmBreve = (funcionalidade: string) => {
-    Alert.alert("Em Breve", `A tela de ${funcionalidade} será implementada em breve!`)
+    Toast.show({
+      type: 'info',
+      text1: `${funcionalidade} - Em Breve!`,
+      position: 'top',
+    })
   }
 
+  // Função para confirmar o logout
   const handleSair = () => {
     Alert.alert(
       "Sair da Conta",
@@ -46,6 +61,7 @@ export default function Perfil() {
       ]
     )
   }
+  
   return (
     <>
       <View style={styles.container}>
@@ -63,9 +79,7 @@ export default function Perfil() {
         {/* MENU */}
         <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
           {/* GESTÃO DO MERCADO */}
-          <Text style={styles.sectionTitle}>
-            Gestão do Mercado
-          </Text>
+          <Text style={styles.sectionTitle}>Gestão do Mercado</Text>
           <View style={styles.menuGroup}>
             <MenuItem 
               icone="cube-outline" 
@@ -90,9 +104,7 @@ export default function Perfil() {
           </View>
 
           {/* APLICATIVO */}
-          <Text style={styles.sectionTitle}>
-            Aplicativo
-          </Text>
+          <Text style={styles.sectionTitle}>Aplicativo</Text>
           <View style={styles.menuGroup}>
             <MenuItem 
               icone="notifications-outline" 
@@ -117,9 +129,7 @@ export default function Perfil() {
           </View>
 
           {/* MINHA CONTA */}
-          <Text style={styles.sectionTitle}>
-            Minha Conta
-          </Text>
+          <Text style={styles.sectionTitle}>Minha Conta</Text>
           <View style={styles.menuGroup}>
             <MenuItem 
               icone="lock-closed-outline" 
