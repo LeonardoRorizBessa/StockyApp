@@ -3,16 +3,18 @@ import { Ionicons } from '@expo/vector-icons'
 import { COLORS, SPACING, FONTS, RADIUS } from '@/theme'
 import InfoProdutos from '@/components/InfoProdutos'
 
+export interface ProdutoModalData {
+  nome: string;
+  medida: string;
+  marca: string;
+  categoria: string;
+  codigoBarras: string;
+  estoque: number;
+}
+
 interface Props {
   visible: boolean;
-  produto: {
-    nome: string;
-    medida: string;
-    marca: string;
-    categoria: string;
-    codigoBarras: string;
-    estoque: number;
-  };
+  produto: ProdutoModalData | null;
   onClose: () => void;
 }
 
@@ -26,23 +28,13 @@ export default function ModalProdutos({
 
   return (
     <>
-      <Modal
-        animationType='slide'
-        transparent={true}
-        visible={visible}
-        onRequestClose={onClose}
-        statusBarTranslucent={true}
-      >
+      <Modal animationType='slide' transparent={true} visible={visible} onRequestClose={onClose} statusBarTranslucent={true}>
         <View style={styles.overlay}>
-          {/* ÁREA DE FECHAMENTO */}
-          <TouchableOpacity 
-            style={styles.areaDeFechamento} 
-            activeOpacity={1}
-            onPress={onClose} 
-          />
+          {/* Área de Fechamento */}
+          <TouchableOpacity style={styles.areaDeFechamento} activeOpacity={1} onPress={onClose} />
 
           {/* CONTEUDO MODAL */}
-          <View style={styles.modalContent}>  
+          <View style={styles.modalContainer}>
             <View style={styles.header}>
               <View>
                 <Text style={styles.title}>{produto.nome}</Text>
@@ -95,7 +87,7 @@ const styles = StyleSheet.create({
     flex: 1,
     width: '100%',
   },
-  modalContent: {
+  modalContainer: {
     backgroundColor: COLORS.cinzaEscuro,
     borderTopLeftRadius: RADIUS.lg,
     borderTopRightRadius: RADIUS.lg,

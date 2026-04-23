@@ -1,24 +1,29 @@
 import { useState, useCallback, useMemo, useEffect } from 'react'
-import { 
-  View, 
-  StyleSheet, 
-  TextInput, 
-  FlatList, 
-  TouchableOpacity,
-  RefreshControl
-} from 'react-native'
+import { View, StyleSheet, TextInput, FlatList, TouchableOpacity } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { supabase } from '@/lib/supabase'
 import { COLORS, SPACING, FONTS, RADIUS } from '@/theme'
 import CardProdutos from '@/components/CardProdutos'
-import ModalProdutos from '@/components/ModalProdutos'
+import ModalProdutos, { ProdutoModalData } from '@/components/ModalProdutos'
+import Toast from 'react-native-toast-message'
 
+interface Produto {
+  id: string | number;
+  nome: string;
+  medida: string;
+  codigo_barras: string;
+  estoque_atual: number;
+  marcas?: { nome: string } | null;
+  categorias?: { nome: string } | null;
+}
+
+// Função para os ícones das categorias
 const getIconeCategoria = (categoriaNome?: string): keyof typeof Ionicons.glyphMap => {
   if (!categoriaNome) return 'bag-handle-outline'
 
-  const nomeNormalizado = categoriaNome.toLowerCase().trim()
-
-  switch (nomeNormalizado) {
+  const nomeMinusculo = categoriaNome.toLowerCase().trim()
+  
+  switch (nomeMinusculo) {
     case 'grãos': return 'basket-outline'
     case 'massas': return 'restaurant-outline'
     case 'padaria': return 'cafe-outline'
@@ -41,15 +46,14 @@ const getIconeCategoria = (categoriaNome?: string): keyof typeof Ionicons.glyphM
 }
 
 export default function Estoque() {
-  const [refreshing, setRefreshing] = useState(false)
   const [busca, setBusca] = useState('')
   const [isFocused, setIsFocused] = useState(false)
   const [modalVisivel, setModalVisivel] = useState(false)
-  const [dadosProdutos, setDadosProdutos] = useState<any[]>([])
-  const [produtoSelecionado, setProdutoSelecionado] = useState<any>(null)
+  const [dadosProdutos, setDadosProdutos] = useState<Produto[]>([])
+  const [produtoSelecionado, setProdutoSelecionado] = useState<ProdutoModalData | null>(null)
 
-  // 1. FUNÇÃO DE BUSCAR DADOS
-  const buscarProdutosNoSupabase = async () => {
+  // Função para buscar dados
+  const buscarDados = async () => {
     const { data, error } = await supabase
       .from('produtos')
       .select(`
@@ -62,18 +66,22 @@ export default function Estoque() {
     return data || []
   }
 
-  // 2. FUNÇÃO DE CARREGAR DADOS
+  // Função para orquestrar o carregamento dos dados
   const orquestrarCarregamento = useCallback(async () => {
     try {
-      const produtosBrutos = await buscarProdutosNoSupabase()
-      setDadosProdutos(produtosBrutos)
+      const produtosBrutos = await buscarDados()
+      setDadosProdutos(produtosBrutos as any)
     } catch (error) {
-      console.error("Erro ao carregar estoque:", error)
+      Toast.show({
+        type: 'error',
+        text1: 'Erro ao carregar produtos',
+        text2: 'Tente novamente mais tarde.',
+        position: 'top',
+      })
     }
   }, [])
 
-  // ==========================================
-  // 3. FUNÇÃO DE PESQUISA
+  // Função de filtrar produtos com base na busca
   const produtosFiltrados = useMemo(() => {
     const termo = busca.trim().toLowerCase()
 
@@ -89,18 +97,12 @@ export default function Estoque() {
     })
   }, [busca, dadosProdutos])
 
+  // Função para limpar a busca
   const limparBusca = () => {
     setBusca('')
   }
 
-  // ==========================================
-  // GATILHOS
-  const onRefresh = useCallback(async () => {
-    setRefreshing(true)
-    await orquestrarCarregamento()
-    setRefreshing(false)
-  }, [orquestrarCarregamento])
-
+  // Carrega e observe os dados em tempo real
   useEffect(() => {
     orquestrarCarregamento()
 
@@ -116,9 +118,8 @@ export default function Estoque() {
     }
   }, [orquestrarCarregamento])
 
-  // ==========================================
-  // FUNÇÃO DE ABRIR MODAL
-  const abrirModal = (item: any) => {
+  // Funcao para abrir o modal com os dados do produto selecionado
+  const abrirModal = (item: Produto) => {
     setProdutoSelecionado({
       nome: item.nome,
       medida: item.medida,
@@ -133,7 +134,7 @@ export default function Estoque() {
   return (
     <>
       <View style={styles.container}>
-        {/* BARRA DE PESQUISA */}
+        {/* HEADER */}
         <View style={[ styles.searchContainer, isFocused && styles.searchContainerFocused ]}>
           <Ionicons name="search-outline" size={24} color={isFocused ? COLORS.laranjaStock : COLORS.cinzaTexto} />
           <TextInput
@@ -152,26 +153,18 @@ export default function Estoque() {
           )}
         </View>
         
-        {/* LISTA DE ESTOQUE */}
+        {/* ESTOQUE */}
         <View style={styles.estoqueContainer}>
           <FlatList
             data={produtosFiltrados}
             keyExtractor={(item) => item.id.toString()}
             showsVerticalScrollIndicator={false}
             contentContainerStyle={styles.itensContainer}
-            refreshControl={
-              <RefreshControl 
-                refreshing={refreshing} 
-                onRefresh={onRefresh} 
-                colors={[COLORS.laranjaStock]} 
-                tintColor={COLORS.laranjaStock} 
-              />
-            }
             renderItem={({ item }) => (
               <CardProdutos 
                 nome={item.nome}
                 medida={item.medida}
-                marca={item.marcas?.nome}
+                marca={item.marcas?.nome || 'Sem marca'}
                 estoque={item.estoque_atual}
                 iconePadrao={getIconeCategoria(item.categorias?.nome)}
                 onPress={() => abrirModal(item)}
@@ -180,7 +173,8 @@ export default function Estoque() {
           />
         </View>
       </View>
-
+      
+      {/* MODAL */}
       <ModalProdutos 
         visible={modalVisivel} 
         onClose={() => setModalVisivel(false)}
@@ -225,11 +219,5 @@ const styles = StyleSheet.create({
   itensContainer: {
     gap: SPACING.xs,
     paddingVertical: SPACING.xs,
-  },
-  emptyText: {
-    textAlign: 'center',
-    color: COLORS.cinzaTexto,
-    marginTop: SPACING.xxl,
-    fontSize: FONTS.size.md,
   },
 })

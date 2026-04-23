@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect } from 'react'
-import { View, StyleSheet, Text, ScrollView, RefreshControl } from 'react-native'
+import { View, StyleSheet, Text, ScrollView } from 'react-native'
 import { supabase } from '@/lib/supabase'
 import { COLORS, SPACING, FONTS } from '@/theme'
 import Avatar from '@/components/Avatar'
@@ -35,8 +35,8 @@ export default function Home() {
     totalPerdas: 0
   })
 
-  // Função para carregar os dados
-  const carregarDados = useCallback(async () => {
+  // Função para buscar dados
+  const buscarDados = useCallback(async () => {
     try {
       // Busca o Perfil
       const { data: { user } } = await supabase.auth.getUser()
@@ -80,15 +80,16 @@ export default function Home() {
 
   // Carrega e observe os dados em tempo real
   useEffect(() => {
-    carregarDados()
+    buscarDados()
+    
     const canal = supabase
       .channel('home-realtime')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'movimentacoes' }, () => carregarDados())
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'produtos' }, () => carregarDados())
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'movimentacoes' }, () => buscarDados())
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'produtos' }, () => buscarDados())
       .subscribe()
 
     return () => { supabase.removeChannel(canal) }
-  }, [carregarDados])
+  }, [buscarDados])
 
   return (
     <>
