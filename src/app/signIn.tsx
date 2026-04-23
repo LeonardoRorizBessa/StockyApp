@@ -1,18 +1,10 @@
 import { useState } from 'react'
-import { 
-  View, 
-  Text, 
-  StyleSheet, 
-  TextInput, 
-  TouchableOpacity,
-  Image,
-  Alert,
-  ActivityIndicator,
-} from 'react-native'
-import { Ionicons } from '@expo/vector-icons'
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, Image, ActivityIndicator } from 'react-native'
 import { router } from 'expo-router'
 import { useAuth } from '@/hooks/useAuth'
+import { Ionicons } from '@expo/vector-icons'
 import { COLORS, SPACING, FONTS, RADIUS } from '@/theme'
+import Toast from 'react-native-toast-message'
 
 export default function SignIn() {
   const { signIn } = useAuth()
@@ -21,23 +13,31 @@ export default function SignIn() {
   const [secureText, setSecureText] = useState(true)
   const [isLoading, setIsLoading] = useState(false)
 
+  // FUNÇÃO LOGIN
   const handleSignIn = async () => {
     if (!email.trim() || !password.trim()) {
-      Alert.alert("Atenção", "Por favor, preencha seu e-mail e senha.")
+      Toast.show({
+        type: 'error',
+        text1: 'Preencha todos os campos',
+        text2: 'Por favor, insira seu e-mail e senha.',
+        position: 'top'
+      })
       return
     }
-
     setIsLoading(true)
 
     const { error } = await signIn(email.trim(), password)
-
     if (error) {
-      Alert.alert("Erro ao entrar", "E-mail ou senha incorretos. Verifique e tente novamente.")
+      Toast.show({
+        type: 'error',
+        text1: 'Erro ao entrar',
+        text2: 'E-mail ou senha incorretos. Verifique e tente novamente.',
+        position: 'top'
+      })
     } 
-
     setIsLoading(false)
   }
-
+  
   return (
     <>
       <View style={styles.container}>
@@ -98,7 +98,7 @@ export default function SignIn() {
 
         {/* BUTÃO ENTRAR */}
         <TouchableOpacity 
-          style={[styles.button, isLoading && { opacity: 0.7 }]} 
+          style={[styles.button, isLoading && { opacity: 0.8 }]} 
           onPress={handleSignIn}
           disabled={isLoading}
           activeOpacity={0.8}
