@@ -5,11 +5,11 @@ import { COLORS, SPACING, FONTS, RADIUS } from '@/theme'
 interface Props {
   icone: keyof typeof Ionicons.glyphMap;
   cor: string;
-  quantidade: number;
+  quantidade?: number;
   text: string;
 }
 
-export default function CardInfos({ icone, cor, quantidade, text }: Props) {
+export default function CardResumo({ icone, cor, quantidade, text }: Props) {
   return (
     <>
       <TouchableOpacity 

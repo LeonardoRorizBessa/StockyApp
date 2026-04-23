@@ -48,8 +48,9 @@ const styles = StyleSheet.create({
   },
   cardText: {
     textAlign: 'center',
+    textTransform: 'uppercase',
     color: COLORS.brancoTexto,
-    fontSize: FONTS.size.md,
+    fontSize: FONTS.size.sm,
     fontWeight: FONTS.weight.semiBold,
   },
 })
