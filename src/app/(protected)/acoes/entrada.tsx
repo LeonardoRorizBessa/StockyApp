@@ -1,30 +1,33 @@
-import { useState, useEffect } from 'react'
-import { 
-  View, 
-  StyleSheet, 
-  Text, 
-  TextInput, 
-  TouchableOpacity, 
-  ActivityIndicator,
-  Alert
-} from 'react-native'
+import { useState, useCallback } from 'react'
+import { View, StyleSheet, Text, TextInput, TouchableOpacity, ActivityIndicator } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
-import { router } from 'expo-router'
+import { router, useFocusEffect } from 'expo-router'
 import { supabase } from '@/lib/supabase'
 import { COLORS, SPACING, FONTS, RADIUS } from '@/theme'
 import ModalSeletor from '@/components/ModalSeletor'
 import InfoProdutos from '@/components/InfoProdutos'
+import Toast from 'react-native-toast-message'
+
+interface Produto {
+  id: string | number;
+  nome: string;
+  medida: string;
+  estoque_atual: number;
+  codigo_barras: string;
+  marcas?: { nome: string } | null;
+  categorias?: { nome: string } | null;
+}
 
 export default function Entrada() {
-  const [produtoSelecionado, setProdutoSelecionado] = useState<any>(null)
+  const [produtoSelecionado, setProdutoSelecionado] = useState<Produto | null>(null)
   const [quantidade, setQuantidade] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [modalProdutoVisivel, setModalProdutoVisivel] = useState(false)
-  const [listaProdutos, setListaProdutos] = useState<any[]>([])
+  const [listaProdutos, setListaProdutos] = useState<Produto[]>([])
 
-  // BUSCAR PRODUTOS AO ABRIR A TELA
-  useEffect(() => {
-    const carregarProdutos = async () => {
+  // Função para buscar dados
+  const carregarProdutos = useCallback(async () => {
+    try {
       const { data, error } = await supabase
         .from('produtos')
         .select(`
@@ -33,45 +36,75 @@ export default function Entrada() {
         `)
         .order('nome')
 
-      if (data) setListaProdutos(data)
+      if (error) throw error
+      if (data) setListaProdutos(data as any)
+    } catch (error) {
+      Toast.show({
+        type: 'error',
+        text1: 'Erro ao carregar produtos',
+      })
     }
-    carregarProdutos()
   }, [])
 
-  // AÇÕES DO MODAL DE PRODUTO
-  const selecionarProduto = (item: any) => {
+  // Carrega e observe os dados em tempo real
+  useFocusEffect(
+    useCallback(() => {
+      carregarProdutos()
+
+      const canalTempoReal = supabase
+        .channel('atualizacoes-entrada')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'produtos' }, () => {
+          carregarProdutos()
+        })
+        .subscribe()
+
+      return () => {
+        supabase.removeChannel(canalTempoReal)
+      }
+    }, [carregarProdutos])
+  )
+
+  // Ações do modal
+  const selecionarProduto = (item: Produto) => {
     setProdutoSelecionado(item)
   }
 
   const adicionarProduto = (novoNome: string) => {
-    Alert.alert(
-      "Atenção", 
-      "Para dar entrada, o produto precisa ser cadastrado antes.",
-      [
-        { text: "Cancelar", style: "cancel" },
-        { text: "Ir para Cadastro", onPress: () => router.push('/acoes/cadastrar') }
-      ]
-    )
+    Toast.show({
+      type: 'error',
+      text1: 'Produto não cadastrado',
+      text2: 'Para dar entrada, o produto precisa ser cadastrado antes.',
+      position: 'top',
+    })
   }
 
+  // Função para limpar o formulário
   const limparFormulario = () => {
     setProdutoSelecionado(null)
     setQuantidade('')
   }
 
-  // SALVAR ENTRADA
+  // Função para salvar a entrada
   const handleSalvar = async () => {
     if (!produtoSelecionado || !quantidade.trim()) {
-      Alert.alert("Atenção", "Por favor, selecione um produto e informe a quantidade.")
+      Toast.show({
+        type: 'error',
+        text1: 'Preencha todos os campos',
+        position: 'top',
+      })
       return
     }
 
     const qtdNumero = parseInt(quantidade, 10)
     if (isNaN(qtdNumero) || qtdNumero <= 0) {
-      Alert.alert("Atenção", "A quantidade deve ser um número maior que zero.")
+      Toast.show({
+        type: 'error',
+        text1: 'Quantidade inválida',
+        text2: 'A quantidade deve ser um número maior que zero.',
+        position: 'top',
+      })
       return
     }
-
     setIsSubmitting(true)
 
     try {
@@ -95,13 +128,23 @@ export default function Entrada() {
 
       if (errorMovimentacao) throw errorMovimentacao
 
-      Alert.alert("Sucesso", "Entrada de estoque registrada!", [
-        { text: "OK", onPress: () => {router.replace('/home'); limparFormulario()} }
-      ])
+      Toast.show({
+        type: 'success',
+        text1: 'Entrada registrada',
+        text2: 'A entrada foi registrada com sucesso.',
+        position: 'top',
+      })
+      limparFormulario()
+      router.replace('/home')
 
     } catch (error) {
       console.error("Erro ao registrar entrada:", error)
-      Alert.alert("Erro", "Não foi possível registrar a entrada. Tente novamente.")
+      Toast.show({
+        type: 'error',
+        text1: 'Erro ao registrar entrada',
+        text2: 'Tente novamente mais tarde.',
+        position: 'top',
+      })
     } finally {
       setIsSubmitting(false)
     }
@@ -110,17 +153,17 @@ export default function Entrada() {
   return (
     <>
       <View style={styles.container}>
-        {/* SECTION HEADER */}
+        {/* HEADER */}
         <View style={styles.headerContainer}>
           <Text style={styles.headerTitle}>Entrada de Estoque</Text>
-          <TouchableOpacity onPress={() => router.replace('/home')}>
+          <TouchableOpacity onPress={() => {router.replace('/home'), limparFormulario()}}>
             <Ionicons name="close" size={24} color={COLORS.brancoTexto} />
           </TouchableOpacity>
         </View>
 
         <View style={styles.divisor} />
         
-        {/* SECTION FORMULÁRIO */}
+        {/* FORM */}
         <View style={styles.formContainer}>
           {/* SELECIONAR PRODUTO */}
           <View style={styles.inputGroup}>
@@ -138,7 +181,10 @@ export default function Entrada() {
             <View style={styles.produtoInfoContainer}>
               <Text style={styles.infoSectionTitle}>Detalhes do Produto</Text>
               <View style={styles.infoGroup}>
+                <InfoProdutos icone="cube-outline" label="Medida" valor={produtoSelecionado.medida} />
                 <InfoProdutos icone="pricetag-outline" label="Marca" valor={produtoSelecionado.marcas?.nome || 'N/A'} />
+                <InfoProdutos icone="grid-outline" label="Categoria" valor={produtoSelecionado.categorias?.nome || 'N/A'} />
+                <InfoProdutos icone="barcode-outline" label="Código de Barras" valor={produtoSelecionado.codigo_barras} />
                 <InfoProdutos icone="cube-outline" label="Estoque Atual" valor={`${produtoSelecionado.estoque_atual} unidades`} />
               </View>
             </View>

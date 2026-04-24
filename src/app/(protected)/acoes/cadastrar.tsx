@@ -1,55 +1,80 @@
-import { useState, useEffect } from 'react'
-import { 
-  View, 
-  StyleSheet, 
-  Text, 
-  TextInput, 
-  TouchableOpacity, 
-  Alert,
-  ActivityIndicator
-} from 'react-native'
+import { useState, useCallback } from 'react'
+import { View, StyleSheet, Text, TextInput, TouchableOpacity, ActivityIndicator } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
-import { router } from 'expo-router'
+import { router, useFocusEffect } from 'expo-router'
 import { supabase } from '@/lib/supabase'
 import { COLORS, SPACING, FONTS, RADIUS } from '@/theme'
 import ModalSeletor from '@/components/ModalSeletor'
+import Toast from 'react-native-toast-message'
+
+interface ItemSeletor {
+  id: string | number;
+  nome: string;
+}
 
 export default function Cadastrar() {
   const [nome, setNome] = useState('')
   const [codigoBarras, setCodigoBarras] = useState('')
   const [medida, setMedida] = useState('')
-  const [marcaSelecionada, setMarcaSelecionada] = useState<any>(null)
-  const [categoriaSelecionada, setCategoriaSelecionada] = useState<any>(null)
+  const [marcaSelecionada, setMarcaSelecionada] = useState<ItemSeletor | null>(null)
+  const [categoriaSelecionada, setCategoriaSelecionada] = useState<ItemSeletor | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [modalMarcaVisivel, setModalMarcaVisivel] = useState(false)
   const [modalCategoriaVisivel, setModalCategoriaVisivel] = useState(false)
-  const [listaMarcas, setListaMarcas] = useState<any[]>([])
-  const [listaCategorias, setListaCategorias] = useState<any[]>([])
+  const [listaMarcas, setListaMarcas] = useState<ItemSeletor[]>([])
+  const [listaCategorias, setListaCategorias] = useState<ItemSeletor[]>([])
 
-  // BUSCAR MARCAS E CATEGORIAS
-  useEffect(() => {
-    const carregarListas = async () => {
-      const { data: marcasData } = await supabase.from('marcas').select('id, nome').order('nome')
-      const { data: categoriasData } = await supabase.from('categorias').select('id, nome').order('nome')
+  // Função para buscar dados
+  const carregarListas = useCallback(async () => {
+    try {
+      const { data: marcasData, error: errorMarcas } = await supabase.from('marcas').select('id, nome').order('nome')
+      if (errorMarcas) throw errorMarcas
+      
+      const { data: categoriasData, error: errorCat } = await supabase.from('categorias').select('id, nome').order('nome')
+      if (errorCat) throw errorCat
       
       if (marcasData) setListaMarcas(marcasData)
       if (categoriasData) setListaCategorias(categoriasData)
+    } catch (error) {
+      Toast.show({
+        type: 'error',
+        text1: 'Erro ao carregar dados',
+      })
     }
-    carregarListas()
   }, [])
 
-  // AÇÕES DOS MODAIS
-  const selecionarMarca = (item: any) => setMarcaSelecionada(item)
+  // Carrega e observe os dados em tempo real
+  useFocusEffect(
+    useCallback(() => {
+      carregarListas()
+
+      const canalTempoReal = supabase
+        .channel('atualizacoes-cadastrar')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'marcas' }, () => {
+          carregarListas()
+        })
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'categorias' }, () => {
+          carregarListas()
+        })
+        .subscribe()
+
+      return () => {
+        supabase.removeChannel(canalTempoReal)
+      }
+    }, [carregarListas])
+  )
+
+  // Ações do modal
+  const selecionarMarca = (item: ItemSeletor) => setMarcaSelecionada(item)
   const adicionarMarca = (novoNome: string) => {
     setMarcaSelecionada({ id: 'novo', nome: novoNome })
   }
-
-  const selecionarCategoria = (item: any) => setCategoriaSelecionada(item)
+  const selecionarCategoria = (item: ItemSeletor) => setCategoriaSelecionada(item)
   const adicionarCategoria = (novoNome: string) => {
     setCategoriaSelecionada({ id: 'novo', nome: novoNome })
   }
 
-  // FUNÇÃO PARA LIMPAR O FORMULÁRIO
+  // Função para limpar o formulário
   const limparFormulario = () => {
     setNome('')
     setCodigoBarras('')
@@ -58,7 +83,7 @@ export default function Cadastrar() {
     setCategoriaSelecionada(null)
   }
 
-  // FUNÇÃO AUXILIAR DE VERIFICAÇÃO DE DUPLICATAS
+  // Função para verificar duplicatas
   const verificarDuplicatas = async (tabela: string, coluna: string, valor: string) => {
     const { data, error } = await supabase
       .from(tabela)
@@ -70,19 +95,28 @@ export default function Cadastrar() {
     return data ? data.id : null
   }
 
-  // SALVAR TUDO NO BANCO DE DADOS
+  // Função para cadastrar
   const handleSalvar = async () => {
     if (!nome.trim() || !marcaSelecionada || !categoriaSelecionada || !medida.trim() || !codigoBarras.trim()) {
-      Alert.alert("Atenção", "Por favor, preencha todos os campos.")
+      Toast.show({
+        type: 'error',
+        text1: 'Campos obrigatórios',
+        text2: 'Por favor, preencha todos os campos.',
+        position: 'top',
+      })
       return
     }
-
     setIsSubmitting(true)
 
     try {
       const barrasExiste = await verificarDuplicatas('produtos', 'codigo_barras', codigoBarras.trim())
       if (barrasExiste) {
-        Alert.alert("Atenção", "Já existe um produto cadastrado com este Código de Barras.")
+        Toast.show({
+          type: 'error',
+          text1: 'Código de Barras já existe',
+          text2: 'O código de barras informado já está cadastrado para outro produto.',
+          position: 'top',
+        })
         setIsSubmitting(false)
         return
       }
@@ -132,13 +166,22 @@ export default function Cadastrar() {
 
       if (produtoError) throw produtoError
 
-      Alert.alert("Sucesso", "Produto cadastrado com sucesso!", [
-        { text: "OK", onPress: () => {router.replace('/home'); limparFormulario()} }
-      ])
+      Toast.show({
+        type: 'success',
+        text1: 'Produto cadastrado',
+        text2: 'O produto foi cadastrado com sucesso!',
+        position: 'top',
+      })
+      limparFormulario()
+      router.replace('/home')
 
     } catch (error) {
-      console.error("Erro ao salvar:", error)
-      Alert.alert("Erro", "Não foi possível cadastrar o produto. Tente novamente.")
+      Toast.show({
+        type: 'error',
+        text1: 'Erro ao cadastrar produto',
+        text2: 'Tente novamente mais tarde.',
+        position: 'top',
+      })
     } finally {
       setIsSubmitting(false)
     }
@@ -147,7 +190,7 @@ export default function Cadastrar() {
   return (
     <>
       <View style={styles.container}>
-        {/* SECTION HEADER */}
+        {/* HEADER */}
         <View style={styles.headerContainer}>
           <Text style={styles.headerTitle}>Cadastrar Produto</Text>
           <TouchableOpacity onPress={() => {router.replace('/home'), limparFormulario()}}>
@@ -157,7 +200,7 @@ export default function Cadastrar() {
 
         <View style={styles.divisor} />
         
-        {/* SECTION FORMULÁRIO */}
+        {/* FORM */}
         <View style={styles.formContainer}>
           {/* NOME */}
           <View style={styles.inputGroup}>
@@ -329,6 +372,5 @@ const styles = StyleSheet.create({
   buttonSalvarText: {
     color: COLORS.brancoTexto,
     fontSize: FONTS.size.lg,
-    fontWeight: FONTS.weight.bold,
-  },
+    fontWeight: FONTS.weight.bold  },
 })

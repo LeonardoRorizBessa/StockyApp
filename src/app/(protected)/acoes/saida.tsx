@@ -1,33 +1,34 @@
-import { useState, useEffect } from 'react'
-import { 
-  View, 
-  StyleSheet, 
-  Text, 
-  TextInput, 
-  TouchableOpacity, 
-  ScrollView, 
-  ActivityIndicator,
-  Alert,
-  Switch,
-} from 'react-native'
+import { useState, useCallback } from 'react'
+import { View, StyleSheet, Text, TextInput, TouchableOpacity, ActivityIndicator, Switch } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
-import { router } from 'expo-router'
+import { router, useFocusEffect } from 'expo-router'
 import { supabase } from '@/lib/supabase'
 import { COLORS, SPACING, FONTS, RADIUS } from '@/theme'
 import ModalSeletor from '@/components/ModalSeletor'
 import InfoProdutos from '@/components/InfoProdutos'
+import Toast from 'react-native-toast-message'
+
+interface Produto {
+  id: string | number;
+  nome: string;
+  medida: string;
+  estoque_atual: number;
+  codigo_barras: string;
+  marcas?: { nome: string } | null;
+  categorias?: { nome: string } | null;
+}
 
 export default function Saida() {
-  const [produtoSelecionado, setProdutoSelecionado] = useState<any>(null)
+  const [produtoSelecionado, setProdutoSelecionado] = useState<Produto | null>(null)
   const [quantidade, setQuantidade] = useState('')
   const [isPerda, setIsPerda] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [modalProdutoVisivel, setModalProdutoVisivel] = useState(false)
-  const [listaProdutos, setListaProdutos] = useState<any[]>([])
+  const [listaProdutos, setListaProdutos] = useState<Produto[]>([])
 
-  // BUSCAR PRODUTOS AO ABRIR A TELA
-  useEffect(() => {
-    const carregarProdutos = async () => {
+  // Função para buscar dados
+  const carregarProdutos = useCallback(async () => {
+    try {
       const { data, error } = await supabase
         .from('produtos')
         .select(`
@@ -36,54 +37,87 @@ export default function Saida() {
         `)
         .order('nome')
 
-      if (data) setListaProdutos(data)
+      if (error) throw error
+      if (data) setListaProdutos(data as any)
+    } catch (error) {
+      Toast.show({
+        type: 'error',
+        text1: 'Erro ao carregar produtos',
+        position: 'top',
+      })
     }
-    carregarProdutos()
   }, [])
 
-  // AÇÕES DO MODAL
-  const selecionarProduto = (item: any) => {
+  // Carrega e observe os dados em tempo real
+  useFocusEffect(
+    useCallback(() => {
+      carregarProdutos()
+
+      const canalTempoReal = supabase
+        .channel('atualizacoes-saida')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'produtos' }, () => {
+          carregarProdutos()
+        })
+        .subscribe()
+
+      return () => {
+        supabase.removeChannel(canalTempoReal)
+      }
+    }, [carregarProdutos])
+  )
+
+  // Ações do modal
+  const selecionarProduto = (item: Produto) => {
     setProdutoSelecionado(item)
   }
 
   const adicionarProduto = (novoNome: string) => {
-    Alert.alert(
-      "Atenção", 
-      "Para dar saída, o produto precisa ser cadastrado antes.",
-      [
-        { text: "Cancelar", style: "cancel" },
-        { text: "Ir para Cadastro", onPress: () => router.push('/acoes/cadastrar') }
-      ]
-    )
+    Toast.show({
+      type: 'error',
+      text1: 'Produto não cadastrado',
+      text2: 'Para dar saída, o produto precisa ser cadastrado antes.',
+      position: 'top',
+    })
   }
 
+  // Função para limpar o formulário
   const limparFormulario = () => {
     setProdutoSelecionado(null)
     setQuantidade('')
     setIsPerda(false)
   }
 
-  // SALVAR SAÍDA
+  // Função para salvar a saída
   const handleSalvar = async () => {
     if (!produtoSelecionado || !quantidade.trim()) {
-      Alert.alert("Atenção", "Por favor, selecione um produto e informe a quantidade.")
+      Toast.show({
+        type: 'error',
+        text1: 'Preencha todos os campos',
+        position: 'top',
+      })
       return
     }
 
     const qtdNumero = parseInt(quantidade, 10)
     if (isNaN(qtdNumero) || qtdNumero <= 0) {
-      Alert.alert("Atenção", "A quantidade deve ser um número maior que zero.")
+      Toast.show({
+        type: 'error',
+        text1: 'Quantidade inválida',
+        text2: 'A quantidade deve ser um número maior que zero.',
+        position: 'top',
+      })
       return
     }
 
     if (qtdNumero > produtoSelecionado.estoque_atual) {
-      Alert.alert(
-        "Estoque Insuficiente", 
-        `Você está tentando retirar ${qtdNumero} unidades, mas só existem ${produtoSelecionado.estoque_atual} em estoque.`
-      )
+      Toast.show({
+        type: 'error',
+        text1: 'Estoque insuficiente',
+        text2: `O estoque atual é de ${produtoSelecionado.estoque_atual} unidades.`,
+        position: 'top',
+      })
       return
     }
-
     setIsSubmitting(true)
 
     try {
@@ -107,13 +141,22 @@ export default function Saida() {
 
       if (errorMovimentacao) throw errorMovimentacao
 
-      Alert.alert("Sucesso", "Saída de estoque registrada!", [
-        { text: "OK", onPress: () => {router.replace('/home'); limparFormulario()} }
-      ])
+      Toast.show({
+        type: 'success',
+        text1: 'Saída registrada',
+        text2: 'A saída foi registrada com sucesso.',
+        position: 'top',
+      })
+      limparFormulario()
+      router.replace('/home')
 
     } catch (error) {
-      console.error("Erro ao registrar saída:", error)
-      Alert.alert("Erro", "Não foi possível registrar a saída. Tente novamente.")
+      Toast.show({
+        type: 'error',
+        text1: 'Erro ao registrar saída',
+        text2: 'Tente novamente mais tarde.',
+        position: 'top',
+      })
     } finally {
       setIsSubmitting(false)
     }
@@ -122,22 +165,18 @@ export default function Saida() {
   return (
     <>
       <View style={styles.container}>
-        {/* SECTION HEADER */}
+        {/* HEADER */}
         <View style={styles.headerContainer}>
           <Text style={styles.headerTitle}>Saída de Estoque</Text>
-          <TouchableOpacity onPress={() => router.replace('/home')}>
+          <TouchableOpacity onPress={() => {router.replace('/home'), limparFormulario()}}>
             <Ionicons name="close" size={24} color={COLORS.brancoTexto} />
           </TouchableOpacity>
         </View>
 
         <View style={styles.divisor} />
         
-        {/* SECTION FORMULÁRIO */}
-        <ScrollView 
-          showsVerticalScrollIndicator={false} 
-          style={styles.formContainer}
-          keyboardShouldPersistTaps="handled"
-        >
+        {/* FORM */}
+        <View style={styles.formContainer}>
           {/* SELECIONAR PRODUTO */}
           <View style={styles.inputGroup}>
             <Text style={styles.label}>Produto</Text>
@@ -154,7 +193,10 @@ export default function Saida() {
             <View style={styles.produtoInfoContainer}>
               <Text style={styles.infoSectionTitle}>Detalhes do Produto</Text>
               <View style={styles.infoGroup}>
-                <InfoProdutos icone="pricetag-outline" label="Marca" valor={produtoSelecionado.marcas?.nome} />
+                <InfoProdutos icone="cube-outline" label="Medida" valor={produtoSelecionado.medida} />
+                <InfoProdutos icone="pricetag-outline" label="Marca" valor={produtoSelecionado.marcas?.nome || 'N/A'} />
+                <InfoProdutos icone="grid-outline" label="Categoria" valor={produtoSelecionado.categorias?.nome || 'N/A'} />
+                <InfoProdutos icone="barcode-outline" label="Código de Barras" valor={produtoSelecionado.codigo_barras} />
                 <InfoProdutos 
                   icone="cube-outline" 
                   label="Estoque Atual" 
@@ -205,7 +247,7 @@ export default function Saida() {
               <Text style={styles.buttonSalvarText}>Confirmar Saída</Text>
             )}
           </TouchableOpacity>
-        </ScrollView>
+        </View>
       </View>
 
       {/* MODAL DE PRODUTOS */}

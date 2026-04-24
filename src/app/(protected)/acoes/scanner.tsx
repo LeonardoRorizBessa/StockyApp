@@ -1,78 +1,102 @@
-import { useState } from 'react'
-import { 
-  View, 
-  StyleSheet, 
-  Text, 
-  TouchableOpacity, 
-  Alert,
-  Button,
-  ActivityIndicator
-} from 'react-native'
+import { useState, useCallback, useEffect } from 'react'
+import { View, StyleSheet, Text, TouchableOpacity, Alert, Button, ActivityIndicator } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { router } from 'expo-router'
 import { COLORS, SPACING, FONTS, RADIUS } from '@/theme'
 import { CameraView, useCameraPermissions } from 'expo-camera'
-
-// 1. Importações do Banco e dos Componentes Visuais
 import { supabase } from '@/lib/supabase'
 import InfoProdutos from '@/components/InfoProdutos'
+import Toast from 'react-native-toast-message'
+
+interface Produto {
+  id: string | number;
+  nome: string;
+  medida: string;
+  estoque_atual: number;
+  codigo_barras: string;
+  marcas?: { nome: string } | null;
+  categorias?: { nome: string } | null;
+}
 
 export default function Scanner() {
   const [permission, requestPermission] = useCameraPermissions()
-  
-  // 2. Novos Estados para controlar a busca
   const [scanned, setScanned] = useState(false)
   const [isBuscando, setIsBuscando] = useState(false)
-  const [produtoEncontrado, setProdutoEncontrado] = useState<any>(null)
+  const [produtoEncontrado, setProdutoEncontrado] = useState<Produto | null>(null)
 
-  // 3. Função Turbinada para Buscar no Banco
-  const handleBarcodeScanned = async ({ type, data }: { type: string, data: string }) => {
-    if (data.length !== 13 && data.length !== 8) return 
-    
-    setScanned(true) 
-    setIsBuscando(true) // Mostra o "carregando"
-
+  // Função para buscar dados
+  const buscarProdutoPorCodigo = useCallback(async (codigo: string) => {
+    setIsBuscando(true)
     try {
-      // Faz a busca no Supabase pelo Código de Barras
       const { data: produto, error } = await supabase
         .from('produtos')
         .select(`
           id, nome, medida, estoque_atual, codigo_barras,
           marcas (nome), categorias (nome)
         `)
-        .eq('codigo_barras', data)
-        .single() // Pega apenas um resultado, já que o código é único
+        .eq('codigo_barras', codigo)
+        .single() 
 
       if (error || !produto) {
-        Alert.alert(
-          "Produto não encontrado", 
-          `O código ${data} não está cadastrado.`,
-          [
-            { text: "Escanear Outro", onPress: () => { setScanned(false); setIsBuscando(false) } },
-            { text: "Cadastrar Agora", onPress: () => router.replace('/acoes/cadastrar') }
-          ]
-        )
+        Toast.show({
+          type: 'error',
+          text1: 'Produto não encontrado',
+          text2: 'Nenhum produto corresponde ao código de barras escaneado.',
+          position: 'top',
+        })
       } else {
-        // Se achou, salva no estado para mostrar na tela
-        setProdutoEncontrado(produto)
+        setProdutoEncontrado(produto as any)
       }
     } catch (err) {
-      console.error("Erro na busca:", err)
-      Alert.alert("Erro", "Não foi possível conectar ao banco de dados.")
+      Toast.show({
+        type: 'error',
+        text1: 'Erro ao buscar produto',
+        text2: 'Ocorreu um erro inesperado. Tente novamente.',
+        position: 'top',
+      })
       setScanned(false)
     } finally {
       setIsBuscando(false)
     }
+  }, [])
+
+  // Função para codigo de barras
+  const handleBarcodeScanned = async ({ type, data }: { type: string, data: string }) => {
+    if (data.length !== 13 && data.length !== 8) return 
+    
+    setScanned(true) 
+    buscarProdutoPorCodigo(data)
   }
 
-  // 4. Função para limpar a tela e voltar para a câmera
+  // Carrega e observe os dados em tempo real
+  useEffect(() => {
+    if (!produtoEncontrado) return
+
+    const canalTempoReal = supabase
+      .channel('scanner-realtime')
+      .on('postgres_changes', { 
+        event: '*', 
+        schema: 'public', 
+        table: 'produtos',
+        filter: `id=eq.${produtoEncontrado.id}`
+      }, () => {
+        buscarProdutoPorCodigo(produtoEncontrado.codigo_barras)
+      })
+      .subscribe()
+
+    return () => {
+      supabase.removeChannel(canalTempoReal)
+    }
+  }, [produtoEncontrado, buscarProdutoPorCodigo])
+
+  // Função para limpar
   const limparEscaner = () => {
     setProdutoEncontrado(null)
     setScanned(false)
   }
 
+  // Verifica permissão
   if (!permission) return <View style={styles.container} /> 
-
   if (!permission.granted) {
     return (
       <View style={styles.containerPermissao}>
@@ -83,86 +107,87 @@ export default function Scanner() {
   }
 
   return (
-    <View style={styles.container}>
-      {/* SECTION HEADER */}
-      <View style={styles.headerContainer}>
-        <Text style={styles.headerTitle}>Scanner</Text>
-        <TouchableOpacity onPress={() => router.replace('/home')}>
-          <Ionicons name="close" size={24} color={COLORS.brancoTexto} />
-        </TouchableOpacity>
-      </View>
-
-      <View style={styles.divisor} />
-
-      {/* RENDERIZAÇÃO CONDICIONAL: Mostra o Produto OU a Câmera */}
-      {produtoEncontrado ? (
-        
-        <View style={styles.resultadoContainer}>
-          <Text style={styles.resultadoTitle}>Produto Encontrado!</Text>
-          
-          <View style={styles.produtoCard}>
-            <Text style={styles.produtoNome}>{produtoEncontrado.nome} {produtoEncontrado.medida}</Text>
-            
-            <View style={styles.divisorInterno} />
-            
-            <View style={styles.infoGroup}>
-              <InfoProdutos icone="pricetag-outline" label="Marca" valor={produtoEncontrado.marcas?.nome || 'N/A'} />
-              <InfoProdutos icone="grid-outline" label="Categoria" valor={produtoEncontrado.categorias?.nome || 'N/A'} />
-              <InfoProdutos icone="barcode-outline" label="Código de Barras" valor={produtoEncontrado.codigo_barras} />
-              <InfoProdutos 
-                icone="cube-outline" 
-                label="Estoque Atual" 
-                valor={`${produtoEncontrado.estoque_atual} unidades`} 
-                corValor={produtoEncontrado.estoque_atual === 0 ? COLORS.vermelhoPerigo : (produtoEncontrado.estoque_atual <= 4 ? COLORS.laranjaStock : COLORS.verdeSucesso)}
-              />
-            </View>
-          </View>
-
-          <TouchableOpacity 
-            style={styles.btnEscanearNovamente} 
-            activeOpacity={0.8} 
-            onPress={limparEscaner}
-          >
-            <Ionicons name="scan" size={24} color={COLORS.brancoTexto} />
-            <Text style={styles.btnEscanearText}>Escanear Novo Produto</Text>
+    <>
+      <View style={styles.container}>
+        {/* HEADER */}
+        <View style={styles.headerContainer}>
+          <Text style={styles.headerTitle}>Scanner</Text>
+          <TouchableOpacity onPress={() => {router.replace('/home'), limparEscaner()}}>
+            <Ionicons name="close" size={24} color={COLORS.brancoTexto} />
           </TouchableOpacity>
         </View>
 
-      ) : (
+        <View style={styles.divisor} />
 
-        <>
-          <View style={styles.cameraContainer}>
-            {isBuscando ? (
-              <View style={styles.loadingContainer}>
-                <ActivityIndicator size="large" color={COLORS.laranjaStock} />
-                <Text style={styles.loadingText}>Buscando no banco...</Text>
-              </View>
-            ) : (
-              <>
-                <CameraView 
-                  style={styles.camera} 
-                  facing="back"
-                  onBarcodeScanned={scanned ? undefined : handleBarcodeScanned}
-                  barcodeScannerSettings={{
-                    barcodeTypes: ["ean13", "ean8"],
-                  }}
+        {produtoEncontrado ? (
+          
+          <View style={styles.resultadoContainer}>
+            <Text style={styles.resultadoTitle}>Produto Encontrado!</Text>
+            
+            <View style={styles.produtoCard}>
+              <Text style={styles.produtoNome}>{produtoEncontrado.nome} {produtoEncontrado.medida}</Text>
+              
+              <View style={styles.divisorInterno} />
+              
+              <View style={styles.infoGroup}>
+                <InfoProdutos icone="pricetag-outline" label="Marca" valor={produtoEncontrado.marcas?.nome || 'N/A'} />
+                <InfoProdutos icone="grid-outline" label="Categoria" valor={produtoEncontrado.categorias?.nome || 'N/A'} />
+                <InfoProdutos icone="barcode-outline" label="Código de Barras" valor={produtoEncontrado.codigo_barras} />
+                <InfoProdutos 
+                  icone="cube-outline" 
+                  label="Estoque Atual" 
+                  valor={`${produtoEncontrado.estoque_atual} unidades`} 
+                  corValor={produtoEncontrado.estoque_atual === 0 ? COLORS.vermelhoPerigo : (produtoEncontrado.estoque_atual <= 4 ? COLORS.laranjaStock : COLORS.verdeSucesso)}
                 />
-                <View style={styles.miraVisual}>
-                  <View style={styles.linhaMira} />
-                </View>
-              </>
-            )}
+              </View>
+            </View>
+
+            <TouchableOpacity 
+              style={styles.btnEscanearNovamente} 
+              activeOpacity={0.8} 
+              onPress={limparEscaner}
+            >
+              <Ionicons name="scan" size={24} color={COLORS.brancoTexto} />
+              <Text style={styles.btnEscanearText}>Escanear Novo Produto</Text>
+            </TouchableOpacity>
           </View>
 
-          <View style={styles.footerContainer}>
-            <Text style={styles.footerText}>
-              Aponte a câmera para o código de barras do produto.
-            </Text>
-          </View>
-        </>
-        
-      )}
-    </View>
+        ) : (
+
+          <>
+            <View style={styles.cameraContainer}>
+              {isBuscando ? (
+                <View style={styles.loadingContainer}>
+                  <ActivityIndicator size="large" color={COLORS.laranjaStock} />
+                  <Text style={styles.loadingText}>Buscando no banco...</Text>
+                </View>
+              ) : (
+                <>
+                  <CameraView 
+                    style={styles.camera} 
+                    facing="back"
+                    onBarcodeScanned={scanned ? undefined : handleBarcodeScanned}
+                    barcodeScannerSettings={{
+                      barcodeTypes: ["ean13", "ean8"],
+                    }}
+                  />
+                  <View style={styles.miraVisual}>
+                    <View style={styles.linhaMira} />
+                  </View>
+                </>
+              )}
+            </View>
+
+            <View style={styles.footerContainer}>
+              <Text style={styles.footerText}>
+                Aponte a câmera para o código de barras do produto.
+              </Text>
+            </View>
+          </>
+          
+        )}
+      </View>
+    </>
   )
 }
 
@@ -207,7 +232,7 @@ const styles = StyleSheet.create({
     borderRadius: RADIUS.lg,
     overflow: 'hidden',
     position: 'relative',
-    backgroundColor: '#000', // Fundo preto enquanto a câmera não abre
+    backgroundColor: '#000',
   },
   camera: {
     flex: 1,
