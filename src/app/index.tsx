@@ -52,8 +52,8 @@ const styles = StyleSheet.create({
     padding: SPACING.lg,
   },
   logoImage: {
-    width: 80,
-    height: 80,
+    width: 120,
+    height: 120,
     marginBottom: SPACING.xxl,
   },
   logoText: {

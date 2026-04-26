@@ -7,6 +7,8 @@ import CardResumo from '@/components/CardResumo'
 import CardAcao from '@/components/CardAcao'
 import CardMovimentacao from '@/components/CardMovimentacao'
 import Toast from 'react-native-toast-message'
+import CardTop, { TopItem } from '@/components/CardTop'
+import AntDesign from '@expo/vector-icons/AntDesign'
 
 interface Resumo {
   totalUnidades: number;
@@ -25,7 +27,9 @@ interface Movimentacao {
 }
 
 export default function Home() {
-  const [nomeMercado, setNomeMercado] = useState('')
+  const [topProdutos, setTopProdutos] = useState<TopItem[]>([])
+  const [topMarcas, setTopMarcas] = useState<TopItem[]>([])
+  const [topCategorias, setTopCategorias] = useState<TopItem[]>([])
   const [dadosMovimentacoes, setDadosMovimentacoes] = useState<any[]>([])
   const [resumo, setResumo] = useState<Resumo>({
     totalUnidades: 0,
@@ -38,24 +42,15 @@ export default function Home() {
   // Função para buscar dados
   const buscarDados = useCallback(async () => {
     try {
-      // Busca o Perfil
-      const { data: { user } } = await supabase.auth.getUser()
-      if (user) {
-        const { data: perfilData } = await supabase
-          .from('perfil')
-          .select('nome_mercado')
-          .eq('id', user.id)
-          .single()
-
-        if (perfilData) setNomeMercado(perfilData.nome_mercado)
-      }
-
       // Busca o Resumo e as Movimentações
       const { data, error } = await supabase.rpc('get_dashboard_resumo')
       if (error) throw error
 
       if (data) {
         setResumo(data.resumo)
+        setTopProdutos(data.topProdutos || [])
+        setTopMarcas(data.topMarcas || [])
+        setTopCategorias(data.topCategorias || [])
         const movimentacoesFormatadas = data.movimentacoes.map((mov: Movimentacao) => ({
           id: mov.id.toString(),
           tipo: mov.tipo,
@@ -96,8 +91,8 @@ export default function Home() {
       <View style={styles.container}>
         {/* HEADER */}
         <View style={styles.header}>
+          <Text style={styles.title}>Dashboard</Text>
           <Avatar />
-          <Text style={styles.nomeMercado}>{nomeMercado}</Text>
         </View>
 
         {/* BODY */}
@@ -109,12 +104,6 @@ export default function Home() {
               cor={COLORS.brancoTexto}
               quantidade={resumo.totalUnidades}
               text={"Total de itens"}
-            />
-            <CardResumo 
-              icone={'trending-up-outline'}
-              cor={COLORS.verdeSucesso}
-              quantidade={resumo.altaDemanda}
-              text={"Alta demanda"}
             />
             <CardResumo 
               icone={'trending-down-outline'}
@@ -136,8 +125,11 @@ export default function Home() {
             />
           </ScrollView>
 
-          {/* AÇÕES RÁPIDAS */}
-          <Text style={styles.title}>Ações Rápidas</Text>
+          {/* AÇÕES */}
+          <View style={styles.titleContainer}>
+            <AntDesign name="thunderbolt" size={20} color={COLORS.cinzaTexto} />
+            <Text style={styles.subTitle}>Ações</Text>
+          </View>
           <View style={styles.acaoContainer}>
             <View style={styles.acaoBox}>
               <CardAcao 
@@ -169,8 +161,31 @@ export default function Home() {
             </View>
           </View>
 
+          {/* ALTA DEMANDA */}
+          <View style={styles.titleContainer}>
+            <AntDesign name="fire" size={20} color={COLORS.cinzaTexto} />
+            <Text style={styles.subTitle}>Alta demanda</Text>
+          </View>
+          <ScrollView showsHorizontalScrollIndicator={false} contentContainerStyle={styles.altaDemandaContainer} horizontal={true}>
+            <CardTop 
+              titulo="Produtos" 
+              dados={topProdutos} 
+            />
+            <CardTop 
+                titulo="Marcas" 
+                dados={topMarcas} 
+              />
+              <CardTop 
+                titulo="Categorias" 
+                dados={topCategorias} 
+              />
+          </ScrollView>
+
           {/* MOVIMENTAÇÕES RECENTES */}
-          <Text style={styles.title}>Movimentações recentes</Text>
+          <View style={styles.titleContainer}>
+            <AntDesign name="field-time" size={20} color={COLORS.cinzaTexto} />
+            <Text style={styles.subTitle}>Movimentações recentes</Text>
+          </View>
           <View style={styles.movimentacoesContainer}>
             {dadosMovimentacoes.map((item) => (
               <CardMovimentacao 
@@ -198,26 +213,29 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'space-between',
     width: '100%',
     marginBottom: SPACING.xs,
-    gap: SPACING.sm,
   },
-  nomeMercado: {
-    color: COLORS.brancoTexto,
-    fontSize: FONTS.size.lg,
-    fontWeight: FONTS.weight.bold,
-  },
-  scrollContent: {
-    paddingBottom: SPACING.xs,
+  titleContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: SPACING.xxs,
+    marginBottom: SPACING.xxs,
   },
   title: {
+    color: COLORS.brancoTexto,
+    fontSize: FONTS.size.xxl,
+    fontWeight: FONTS.weight.bold,
+  },
+  subTitle: {
     textTransform: 'uppercase',
     color: COLORS.cinzaTexto,
     fontSize: FONTS.size.sm,
     fontWeight: FONTS.weight.bold,
-    marginTop: SPACING.lg,
-    marginBottom: SPACING.xs,
-    marginLeft: SPACING.xs,
+  },
+  scrollContent: {
+    paddingBottom: SPACING.xs,
   },
   flatList: {
     flexGrow: 0,
@@ -225,14 +243,24 @@ const styles = StyleSheet.create({
   },
   resumoContainer: {
     gap: SPACING.xs,
+    marginBottom: SPACING.lg,
   },
   acaoContainer: {
     gap: SPACING.xs,
+    marginBottom: SPACING.lg,
   },
   acaoBox: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     width: '100%',
+    gap: SPACING.xs,
+  },
+  altaDemandaContainer: {
+    gap: SPACING.xs,
+    marginBottom: SPACING.lg,
+  },
+  topRow: {
+    flexDirection: 'row',
     gap: SPACING.xs,
   },
   movimentacoesContainer: {
