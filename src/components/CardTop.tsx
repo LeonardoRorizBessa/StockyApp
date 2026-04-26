@@ -13,10 +13,7 @@ interface Props {
 
 export default function CardTop({ titulo, dados }: Props) {
   return (
-    <TouchableOpacity
-      style={styles.card}
-      activeOpacity={0.8}
-    >
+    <View style={styles.card}>
       <Text style={styles.cardTitle}>{titulo}</Text>
       <View style={{ gap: SPACING.xxs }}>
         {dados.map((item, index) => (
@@ -26,7 +23,7 @@ export default function CardTop({ titulo, dados }: Props) {
           </View>
         ))}
       </View>
-    </TouchableOpacity>
+    </View>
   )
 }
 

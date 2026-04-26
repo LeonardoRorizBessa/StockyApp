@@ -12,10 +12,7 @@ interface Props {
 export default function CardResumo({ icone, cor, quantidade, text }: Props) {
   return (
     <>
-      <TouchableOpacity 
-        activeOpacity={0.8}
-        style={styles.card}
-      >
+      <View style={styles.card}>
         <View style={styles.cardIcon}>
           <Ionicons name={icone} size={24} color={cor} />
         </View>
@@ -25,7 +22,7 @@ export default function CardResumo({ icone, cor, quantidade, text }: Props) {
         <Text style={styles.cardText}>
           {text}
         </Text>
-      </TouchableOpacity>
+      </View>
     </>
   )
 }
