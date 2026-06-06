@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react'
 import { View, Text, StyleSheet, ScrollView, Alert } from 'react-native'
-import { useFocusEffect } from 'expo-router'
+import { useFocusEffect, router } from 'expo-router'
 import { Ionicons } from '@expo/vector-icons'
 import { useAuth } from '@/hooks/useAuth'
 import { supabase } from '@/lib/supabase'
@@ -13,13 +13,11 @@ export default function Perfil() {
   const [nomeMercado, setNomeMercado] = useState()
   const [nomeADM, setNomeADM] = useState()
 
-  // Função para buscar dados
   useFocusEffect(
     useCallback(() => {
       const carregarPerfil = async () => {
         try {
           const { data: { user } } = await supabase.auth.getUser()
-
           if (!user) return
 
           const { data, error } = await supabase
@@ -36,12 +34,10 @@ export default function Perfil() {
           console.error("Erro ao carregar perfil:", error)
         }
       }
-
       carregarPerfil()
     }, [])
   )
 
-  // Função para mostrar mensagem de "Em Breve"
   const handleEmBreve = (funcionalidade: string) => {
     Toast.show({
       type: 'info',
@@ -50,7 +46,6 @@ export default function Perfil() {
     })
   }
 
-  // Função para confirmar o logout
   const handleSair = () => {
     Alert.alert(
       "Sair da Conta",
@@ -82,24 +77,19 @@ export default function Perfil() {
           <Text style={styles.sectionTitle}>Gestão do Mercado</Text>
           <View style={styles.menuGroup}>
             <MenuItem 
-              icone="cube-outline" 
-              titulo="Produtos" 
-              onPress={() => handleEmBreve("Apagar/Editar Produtos")} 
-            />
-            <MenuItem 
               icone="pricetags-outline" 
               titulo="Marcas" 
-              onPress={() => handleEmBreve("Apagar/Editar Marcas")} 
+              onPress={() => router.push('/(protected)/acoes/marcas')} 
             />
             <MenuItem 
               icone="list-outline" 
               titulo="Categorias" 
-              onPress={() => handleEmBreve("Apagar/Editar Categorias")} 
+              onPress={() => router.push('/(protected)/acoes/categorias')} 
             />
             <MenuItem 
               icone="storefront-outline" 
               titulo="Dados da Loja" 
-              onPress={() => handleEmBreve("Dados da Loja")} 
+              onPress={() => router.push('/(protected)/acoes/dadosLoja')} 
             />
           </View>
 
@@ -109,22 +99,22 @@ export default function Perfil() {
             <MenuItem 
               icone="notifications-outline" 
               titulo="Avisos e Notificações" 
-              onPress={() => handleEmBreve("Avisos e Notificações")} 
+              onPress={() => router.push('/(protected)/acoes/avisos')} 
             />
             <MenuItem 
               icone="help-circle-outline" 
               titulo="Central de Ajuda (FAQ)" 
-              onPress={() => handleEmBreve("Central de Ajuda")} 
+              onPress={() => router.push('/(protected)/acoes/faq')} 
             />
             <MenuItem 
               icone="chatbubbles-outline" 
               titulo="Falar com o Suporte" 
-              onPress={() => handleEmBreve("Falar com o Suporte")} 
+              onPress={() => router.push('/(protected)/acoes/suporte')} 
             />
             <MenuItem 
               icone="information-circle-outline" 
               titulo="Sobre o App" 
-              onPress={() => handleEmBreve("Sobre o App")} 
+              onPress={() => router.push('/(protected)/acoes/sobre')} 
             />
           </View>
 
@@ -146,7 +136,6 @@ export default function Perfil() {
         </ScrollView>
       </View>
     </>
-   
   )
 }
 

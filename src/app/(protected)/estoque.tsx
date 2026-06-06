@@ -58,7 +58,7 @@ export default function Estoque() {
       .from('produtos')
       .select(`
         id, nome, medida, codigo_barras, estoque_atual,
-        marcas (nome), categorias (nome)
+        marcas (id, nome), categorias (id, nome)
       `)
       .order('nome', { ascending: true })
 
@@ -121,10 +121,13 @@ export default function Estoque() {
   // Funcao para abrir o modal com os dados do produto selecionado
   const abrirModal = (item: Produto) => {
     setProdutoSelecionado({
+      id: item.id,
       nome: item.nome,
       medida: item.medida,
       marca: item.marcas?.nome || 'Sem marca',
+      marcaId: (item.marcas as any)?.id || '',
       categoria: item.categorias?.nome || 'Sem categoria',
+      categoriaId: (item.categorias as any)?.id || '',
       codigoBarras: item.codigo_barras,
       estoque: item.estoque_atual
     })
@@ -179,6 +182,7 @@ export default function Estoque() {
         visible={modalVisivel} 
         onClose={() => setModalVisivel(false)}
         produto={produtoSelecionado}
+        onExcluido={orquestrarCarregamento}
       />
     </>
   )
