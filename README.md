@@ -1,50 +1,106 @@
-# Welcome to your Expo app 👋
+# 📦 Stocky — Gerenciador de Estoque Mobile
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Aplicativo mobile de controle de estoque desenvolvido para micro e pequenos empreendedores. O Stocky oferece uma solução simples, acessível e eficiente para gerenciar produtos, registrar movimentações e acompanhar indicadores em tempo real.
 
-## Get started
+---
 
-1. Install dependencies
+## 📱 Telas
 
-   ```bash
-   npm install
-   ```
+### Splash Screen
+<img src="prints/print01.jpeg" width="250"/>
 
-2. Start the app
+Tela de carregamento com a identidade visual do Stocky — logo e nome do app em destaque sobre fundo escuro.
 
-   ```bash
-   npx expo start
-   ```
+---
 
-In the output, you'll find options to open the app in a
+### Login
+<img src="prints/print03.jpeg" width="250"/>
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+Autenticação via e-mail e senha com toggle de visibilidade da senha. Acesso seguro à conta do estabelecimento.
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+---
 
-## Get a fresh project
+### Dashboard
+<img src="prints/print04.jpeg" width="250"/> <img src="prints/print05.jpeg" width="250"/>
 
-When you're ready, run:
+Painel principal com indicadores em tempo real: total de itens, estoque baixo e produtos sem estoque. Acesso rápido às principais ações — cadastrar produto, entrada, saída e scanner. Exibe também ranking de produtos e marcas com maior demanda e histórico de movimentações recentes.
 
-```bash
-npm run reset-project
-```
+---
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+### Estoque
+<img src="prints/print06.jpeg" width="250"/>
 
-## Learn more
+Listagem completa dos produtos cadastrados com busca em tempo real. Cada item exibe nome, marca, categoria e quantidade em estoque — com indicação visual em vermelho para estoque zerado e laranja para estoque baixo.
 
-To learn more about developing your project with Expo, look at the following resources:
+---
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+### Cadastrar Produto
+<img src="prints/print16.jpeg" width="250"/>
 
-## Join the community
+Formulário de cadastro com campos para nome, marca, categoria, medida e código de barras. Marcas e categorias podem ser selecionadas ou criadas diretamente pelo campo de seleção.
 
-Join our community of developers creating universal apps.
+---
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+### Entrada de Estoque
+<img src="prints/print17.jpeg" width="250"/>
+
+Registro de entrada de mercadoria com seleção do produto e quantidade. Confirmação com um toque, atualizando o estoque em tempo real.
+
+---
+
+### Saída de Estoque
+<img src="prints/print18.jpeg" width="250"/>
+
+Registro de saída com opção de marcar o item como perda — útil para produtos vencidos, estragados ou danificados. O histórico é preservado mesmo após exclusão do produto.
+
+---
+
+### Scanner de Código de Barras
+<img src="prints/print19.jpeg" width="250"/>
+
+Scanner EAN integrado que utiliza a câmera do dispositivo para identificar produtos pelo código de barras, agilizando entradas, saídas e buscas no estoque.
+
+---
+
+### Perfil e Configurações
+<img src="prints/print08.jpeg" width="250"/>
+
+Área do administrador com acesso à gestão de marcas, categorias e dados da loja. Também centraliza notificações, suporte, FAQ e configurações de segurança.
+
+---
+
+### Perguntas Frequentes
+<img src="prints/print13.jpeg" width="250"/>
+
+Central de ajuda com acordeão de perguntas e respostas sobre as principais funcionalidades do app.
+
+---
+
+## 🛠️ Stack
+
+- **React Native** + **Expo**
+- **TypeScript**
+- **Supabase** (banco de dados, autenticação e realtime)
+- **Expo Camera** (scanner de código de barras)
+- **Context API** (gerenciamento de estado)
+
+---
+
+## ✨ Funcionalidades
+
+- ✅ Autenticação segura
+- ✅ Dashboard com indicadores em tempo real
+- ✅ CRUD completo de produtos, marcas e categorias
+- ✅ Entrada e saída de estoque com histórico
+- ✅ Marcação de perdas
+- ✅ Scanner de código de barras EAN
+- ✅ Ranking de produtos e marcas mais movimentados
+- ✅ Histórico preservado após exclusão de produtos
+- ✅ Central de ajuda (FAQ)
+
+---
+
+## 👨‍💻 Desenvolvido por
+
+**Leonardo Roriz Bessa**
+[GitHub](https://github.com/LeonardoRorizBessa) · [LinkedIn](https://linkedin.com/in/leonardorbessa) · [Portfólio](https://roriz-dev.vercel.app)
