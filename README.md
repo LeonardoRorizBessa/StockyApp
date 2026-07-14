@@ -9,20 +9,14 @@ Aplicativo mobile de controle de estoque desenvolvido para micro e pequenos empr
 ### Splash Screen
 
 <img src="src/assets/print01.jpeg" width="250"/>
-=======
-<img src="prints/print01.jpeg" width="250"/>
->>>>>>> 8eb4417036352bff431234867e14f77b43e3b60f
 
 Tela de carregamento com a identidade visual do Stocky — logo e nome do app em destaque sobre fundo escuro.
 
 ---
 
 ### Login
-<<<<<<< HEAD
+
 <img src="src/assets/print03.jpeg" width="250"/>
-=======
-<img src="prints/print03.jpeg" width="250"/>
->>>>>>> 8eb4417036352bff431234867e14f77b43e3b60f
 
 Autenticação via e-mail e senha com toggle de visibilidade da senha. Acesso seguro à conta do estabelecimento.
 
