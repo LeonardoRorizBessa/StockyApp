@@ -54,14 +54,14 @@ Registro de entrada de mercadoria com seleção do produto e quantidade. Confirm
 
 ---
 
-### Saída de Estoque
+### Scanner de Código de Barras
 <img src="src/assets/print18.jpeg" width="200"/>
 
 Registro de saída com opção de marcar o item como perda — útil para produtos vencidos, estragados ou danificados. O histórico é preservado mesmo após exclusão do produto.
 
 ---
 
-### Scanner de Código de Barras
+### Saída de Estoque
 
 <img src="src/assets/print19.jpeg" width="200"/>
 
