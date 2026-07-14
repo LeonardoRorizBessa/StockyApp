@@ -8,9 +8,9 @@ Aplicativo mobile de controle de estoque desenvolvido para micro e pequenos empr
 
 ### Splash Screen
 
-<img src="src/assets/print01.jpeg" width="250"/>
+<img src="src/assets/print01.jpeg" width="200"/>
 
-Tela de carregamento com a identidade visual do Stocky — logo e nome do app em destaque sobre fundo escuro.
+Tela de carregamento com a identidade visual do Stocky.
 
 ---
 
@@ -24,13 +24,14 @@ Autenticação via e-mail e senha com toggle de visibilidade da senha. Acesso se
 
 ### Dashboard
 
-<img src="src/assets/print04.jpeg" width="250"/> <img src="src/assets/print05.jpeg" width="250"/>
+<img src="src/assets/print04.jpeg" width="250"/>
 
-Painel principal com indicadores em tempo real: total de itens, estoque baixo e produtos sem estoque. Acesso rápido às principais ações — cadastrar produto, entrada, saída e scanner. Exibe também ranking de produtos e marcas com maior demanda e histórico de movimentações recentes.
+Painel principal com indicadores em tempo real: total de itens, estoque baixo e produtos sem estoque. Acesso rápido às principais ações que são cadastrar produto, entrada, saída e scanner. Exibe também ranking de produtos e marcas com maior demanda e histórico de movimentações recentes.
 
 ---
 
 ### Estoque
+
 <img src="src/assets/print06.jpeg" width="250"/>
 
 Listagem completa dos produtos cadastrados com busca em tempo real. Cada item exibe nome, marca, categoria e quantidade em estoque — com indicação visual em vermelho para estoque zerado e laranja para estoque baixo.
