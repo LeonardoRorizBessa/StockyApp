@@ -7,7 +7,7 @@ Aplicativo mobile de controle de estoque desenvolvido para micro e pequenos empr
 ## 📱 Telas
 
 ### Splash Screen
-<<<<<<< HEAD
+
 <img src="src/assets/print01.jpeg" width="250"/>
 =======
 <img src="prints/print01.jpeg" width="250"/>
