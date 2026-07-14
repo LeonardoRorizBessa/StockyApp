@@ -23,88 +23,62 @@ Autenticação via e-mail e senha com toggle de visibilidade da senha. Acesso se
 ---
 
 ### Dashboard
-<<<<<<< HEAD
+
 <img src="src/assets/print04.jpeg" width="250"/> <img src="src/assets/print05.jpeg" width="250"/>
-=======
-<img src="prints/print04.jpeg" width="250"/> <img src="prints/print05.jpeg" width="250"/>
->>>>>>> 8eb4417036352bff431234867e14f77b43e3b60f
 
 Painel principal com indicadores em tempo real: total de itens, estoque baixo e produtos sem estoque. Acesso rápido às principais ações — cadastrar produto, entrada, saída e scanner. Exibe também ranking de produtos e marcas com maior demanda e histórico de movimentações recentes.
 
 ---
 
 ### Estoque
-<<<<<<< HEAD
 <img src="src/assets/print06.jpeg" width="250"/>
-=======
-<img src="prints/print06.jpeg" width="250"/>
->>>>>>> 8eb4417036352bff431234867e14f77b43e3b60f
 
 Listagem completa dos produtos cadastrados com busca em tempo real. Cada item exibe nome, marca, categoria e quantidade em estoque — com indicação visual em vermelho para estoque zerado e laranja para estoque baixo.
 
 ---
 
 ### Cadastrar Produto
-<<<<<<< HEAD
+
 <img src="src/assets/print16.jpeg" width="250"/>
-=======
-<img src="prints/print16.jpeg" width="250"/>
->>>>>>> 8eb4417036352bff431234867e14f77b43e3b60f
 
 Formulário de cadastro com campos para nome, marca, categoria, medida e código de barras. Marcas e categorias podem ser selecionadas ou criadas diretamente pelo campo de seleção.
 
 ---
 
 ### Entrada de Estoque
-<<<<<<< HEAD
+
 <img src="src/assets/print17.jpeg" width="250"/>
-=======
-<img src="prints/print17.jpeg" width="250"/>
->>>>>>> 8eb4417036352bff431234867e14f77b43e3b60f
 
 Registro de entrada de mercadoria com seleção do produto e quantidade. Confirmação com um toque, atualizando o estoque em tempo real.
 
 ---
 
 ### Saída de Estoque
-<<<<<<< HEAD
 <img src="src/assets/print18.jpeg" width="250"/>
-=======
-<img src="prints/print18.jpeg" width="250"/>
->>>>>>> 8eb4417036352bff431234867e14f77b43e3b60f
 
 Registro de saída com opção de marcar o item como perda — útil para produtos vencidos, estragados ou danificados. O histórico é preservado mesmo após exclusão do produto.
 
 ---
 
 ### Scanner de Código de Barras
-<<<<<<< HEAD
+
 <img src="src/assets/print19.jpeg" width="250"/>
-=======
-<img src="prints/print19.jpeg" width="250"/>
->>>>>>> 8eb4417036352bff431234867e14f77b43e3b60f
 
 Scanner EAN integrado que utiliza a câmera do dispositivo para identificar produtos pelo código de barras, agilizando entradas, saídas e buscas no estoque.
 
 ---
 
 ### Perfil e Configurações
-<<<<<<< HEAD
+
 <img src="src/assets/print08.jpeg" width="250"/>
-=======
-<img src="prints/print08.jpeg" width="250"/>
->>>>>>> 8eb4417036352bff431234867e14f77b43e3b60f
 
 Área do administrador com acesso à gestão de marcas, categorias e dados da loja. Também centraliza notificações, suporte, FAQ e configurações de segurança.
 
 ---
 
 ### Perguntas Frequentes
-<<<<<<< HEAD
+
 <img src="src/assets/print13.jpeg" width="250"/>
-=======
-<img src="prints/print13.jpeg" width="250"/>
->>>>>>> 8eb4417036352bff431234867e14f77b43e3b60f
 
 Central de ajuda com acordeão de perguntas e respostas sobre as principais funcionalidades do app.
 
