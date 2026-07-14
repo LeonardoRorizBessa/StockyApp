@@ -110,10 +110,4 @@ Central de ajuda com acordeão de perguntas e respostas sobre as principais func
 
 ## 👨‍💻 Desenvolvido por
 
-<<<<<<< HEAD
 **Leonardo Roriz Bessa**  
-[GitHub](https://github.com/LeonardoRorizBessa) · [LinkedIn](https://linkedin.com/in/leonardorbessa) · [Portfólio](https://roriz-dev.vercel.app)
-=======
-**Leonardo Roriz Bessa**
-[GitHub](https://github.com/LeonardoRorizBessa) · [LinkedIn](https://linkedin.com/in/leonardorbessa) · [Portfólio](https://roriz-dev.vercel.app)
->>>>>>> 8eb4417036352bff431234867e14f77b43e3b60f
